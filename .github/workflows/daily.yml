@@ -23,15 +23,15 @@ jobs:
       - name: Install
         run: pip install huggingface_hub jinja2 requests
 
-      - name: Run
+      - name: Run Engine
         run: |
           python engine.py
           python generate.py
 
-      - name: Commit
+      - name: Deploy
         run: |
           git config --global user.name "MonopolyBot"
           git config --global user.email "bot@ai-monopoly.com"
           git add .
-          git commit -m "Auto-update" || exit 0
+          git commit -m "Auto-update $(date +'%Y-%m-%d')" || exit 0
           git push
