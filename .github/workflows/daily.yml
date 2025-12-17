@@ -24,4 +24,8 @@ jobs:
           git config user.email "bot@ai-monopoly.com"
           git add .
           git commit -m "Auto-update: $(date +'%Y-%m-%d')" || exit 0
+<<<<<<< HEAD
           git push
+=======
+          git push
+>>>>>>> 254c8f2 (feat: complete monopoly engine with styling and automation)
