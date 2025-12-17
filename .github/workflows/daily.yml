@@ -3,21 +3,25 @@ on:
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
+permissions:
+  contents: write  # Crucial: This allows the bot to push new data
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with: { python-version: '3.10' }
       - run: pip install huggingface_hub jinja2
-      - run: |
+      - name: Mine and Generate
+        run: |
           python engine.py
           python generate.py
-      - name: Deploy
+      - name: Deploy Changes
         run: |
           git config user.name "MonopolyBot"
+          git config user.email "bot@ai-monopoly.com"
           git add .
-          git commit -m "Auto-update" || exit 0
+          git commit -m "Auto-update: $(date +'%Y-%m-%d')" || exit 0
           git push
