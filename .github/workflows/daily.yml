@@ -1,31 +1,37 @@
 name: Global Monopoly Update
+
 on:
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
+
 permissions:
-  contents: write  # Crucial: This allows the bot to push new data
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup Python
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python Setup
         uses: actions/setup-python@v5
-        with: { python-version: '3.10' }
-      - run: pip install huggingface_hub jinja2
-      - name: Mine and Generate
+        with:
+          python-version: '3.10'
+
+      - name: Install
+        run: pip install huggingface_hub jinja2 requests
+
+      - name: Run
         run: |
           python engine.py
           python generate.py
-      - name: Deploy Changes
+
+      - name: Commit
         run: |
-          git config user.name "MonopolyBot"
-          git config user.email "bot@ai-monopoly.com"
+          git config --global user.name "MonopolyBot"
+          git config --global user.email "bot@ai-monopoly.com"
           git add .
-          git commit -m "Auto-update: $(date +'%Y-%m-%d')" || exit 0
-<<<<<<< HEAD
+          git commit -m "Auto-update" || exit 0
           git push
-=======
-          git push
->>>>>>> 254c8f2 (feat: complete monopoly engine with styling and automation)
