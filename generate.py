@@ -1,46 +1,5 @@
-import sqlite3, os, datetime
+import sqlite3, os, json
 from jinja2 import Template
-
-# --- INDIVIDUAL AUDIT PAGE (THE "ENGINE ROOM") ---
-HTML_TEMPLATE = """
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VRAM.wiki | {{ gpu_name }} Audit</title>
-    <style>
-        :root { --bg: #050505; --neon: #00f2ff; --warn: #ff0055; --card: rgba(20, 20, 20, 0.8); }
-        body { background: var(--bg); color: #fff; font-family: 'JetBrains Mono', monospace; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
-        .hud { border: 2px solid var(--neon); padding: 40px; border-radius: 5px; background: var(--card); box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); max-width: 600px; position: relative; }
-        .hud::before { content: "SYSTEM_DIAGNOSTIC_v2.5"; position: absolute; top: -12px; left: 20px; background: var(--bg); padding: 0 10px; color: var(--neon); font-size: 10px; }
-        .header { border-bottom: 1px solid #333; margin-bottom: 30px; padding-bottom: 20px; }
-        .gpu-title { font-size: 24px; text-transform: uppercase; letter-spacing: 5px; }
-        .stat-row { display: flex; justify-content: space-between; margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.03); border-left: 3px solid var(--neon); }
-        .val { font-weight: bold; color: var(--neon); }
-        .status-box { text-align: center; margin-top: 30px; padding: 20px; border: 1px dashed #444; }
-        .btn { display: block; border: 1px solid var(--neon); color: var(--neon); text-decoration: none; text-align: center; padding: 15px; margin-top: 30px; transition: 0.3s; }
-        .btn:hover { background: var(--neon); color: #000; box-shadow: 0 0 30px var(--neon); }
-    </style>
-</head>
-<body>
-    <div class="hud">
-        <div class="header">
-            <div class="gpu-title">{{ gpu_name }}</div>
-            <div style="font-size: 10px; color: #666;">TARGET: {{ model_name }}</div>
-        </div>
-        {% for r in results %}
-        <div class="stat-row">
-            <span>QUANT: {{ r.bit }}-BIT</span>
-            <span class="val">{{ r.needed }}GB</span>
-            <span style="color: {{ '#00ff00' if 'YES' in r.status else '#ff0000' }}">{{ r.status }}</span>
-        </div>
-        {% endfor %}
-        <a href="#" class="btn">ACQUIRE HARDWARE VIA AMAZON_NODE</a>
-    </div>
-</body>
-</html>
-"""
 
 def run_build():
     conn = sqlite3.connect('monopoly.db')
@@ -48,121 +7,182 @@ def run_build():
     c = conn.cursor()
     os.makedirs('docs', exist_ok=True)
     
-    models = c.execute("SELECT * FROM models").fetchall()
-    hardware = c.execute("SELECT * FROM hardware").fetchall()
+    models = [dict(row) for row in c.execute("SELECT * FROM models").fetchall()]
+    hardware = [dict(row) for row in c.execute("SELECT * FROM hardware").fetchall()]
     
-    links, sitemap_urls = [], []
-    base_url = "https://bassdevil87-max.github.io/memory"
-
+    # Pre-calculate data for the "Better than the Reference" Instant Search
+    # This embeds the logic into the JS so it's lightning fast
+    db_dump = []
     for h in hardware:
         for m in models:
-            results = []
-            baseline_vram = 0
-            for bit in [4, 8, 16]:
-                needed = round(((m['params_b'] * bit) / 8) * 1.25 + 0.6, 1)
-                if bit == 4: baseline_vram = needed
-                results.append({"bit": bit, "needed": needed, "status": "PASS" if h['vram_gb'] >= needed else "FAIL"})
-            
-            slug = f"{h['id']}-vs-{m['id'].replace('/', '-')}.html".lower()
-            with open(f"docs/{slug}", "w") as f:
-                f.write(Template(HTML_TEMPLATE).render(
-                    model_name=m['id'], gpu_name=h['name'], vram_total=h['vram_gb'], 
-                    results=results, date=2025
-                ))
-            
-            links.append(f'''
-                <a href="{slug}" class="item" data-vram="{baseline_vram}">
-                    <div class="glitch-box">
-                        <span class="g-name">{h['name']}</span>
-                        <span class="m-name">{m['id']}</span>
-                    </div>
-                    <div class="r-val">{baseline_vram}GB</div>
-                </a>''')
-            sitemap_urls.append(f"{base_url}/{slug}")
+            db_dump.append({
+                "gpu": h['name'],
+                "vram": h['vram_gb'],
+                "model": m['id'],
+                "task": m['task'],
+                "params": m['params_b'],
+                "slug": f"{h['id']}-vs-{m['id'].replace('/', '-')}.html".lower()
+            })
 
-    # --- THE TERMINAL INDEX ---
-   # --- THE "ZERO-STATE" TERMINAL INDEX ---
+    # --- THE "GLASS-WORKSTATION" INDEX ---
     index_html = f"""
     <!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>VRAM_WIKI // COMMAND_CENTER</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>VRAM.wiki | Intelligent Hardware Auditor</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <style>
-            :root {{ --neon: #00f2ff; --bg: #050505; }}
-            body {{ background: var(--bg); color: var(--neon); font-family: 'Courier New', monospace; margin: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }}
+            :root {{ --bg: #0a0a0c; --panel: #141417; --accent: #00f2ff; --border: #222226; --text: #e0e0e0; }}
+            body {{ background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }}
             
-            .vignette {{ position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, transparent 20%, black 120%); pointer-events: none; }}
-            
-            .search-zone {{ margin-top: 20vh; text-align: center; width: 80%; max-width: 800px; z-index: 10; transition: 0.5s ease; }}
-            .search-zone.active {{ margin-top: 5vh; }}
+            /* LEFT INPUT PANEL */
+            .sidebar {{ width: 400px; background: var(--panel); border-right: 1px solid var(--border); padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }}
+            h1 {{ font-size: 1.5rem; letter-spacing: -1px; margin: 0 0 1rem 0; color: #fff; }}
+            label {{ font-size: 0.75rem; text-transform: uppercase; color: #666; letter-spacing: 1px; font-weight: bold; }}
+            select, input {{ background: #000; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 8px; width: 100%; outline: none; }}
+            select:focus {{ border-color: var(--accent); }}
 
-            h1 {{ font-size: 3rem; letter-spacing: 10px; text-shadow: 0 0 20px var(--neon); margin-bottom: 40px; }}
+            /* RIGHT ANALYTICS PANEL */
+            .main-stage {{ flex-grow: 1; padding: 3rem; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #16161a 0%, #0a0a0c 100%); }}
+            .audit-card {{ width: 100%; max-width: 900px; display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }}
             
-            .cmd-input {{ background: transparent; border: 2px solid var(--neon); color: var(--neon); padding: 20px; width: 100%; font-size: 1.5rem; font-family: inherit; outline: none; box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.2); }}
-            
-            .slider-box {{ margin-top: 20px; display: flex; align-items: center; gap: 20px; opacity: 0.7; font-size: 0.8rem; }}
-            input[type=range] {{ flex-grow: 1; accent-color: var(--neon); }}
+            /* THE RING */
+            .visual-center {{ position: relative; width: 300px; height: 300px; margin: auto; }}
+            #vramChart {{ filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.2)); }}
+            .chart-label {{ position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }}
+            .chart-label span {{ display: block; font-size: 0.8rem; color: #666; }}
+            .chart-label b {{ font-size: 2.5rem; color: #fff; }}
 
-            /* RESULTS - INITIALLY HIDDEN */
-            #list {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; width: 90%; max-width: 1200px; margin-top: 50px; opacity: 0; transition: 0.5s; pointer-events: none; }}
-            #list.visible {{ opacity: 1; pointer-events: auto; }}
-
-            .item {{ border: 1px solid #111; padding: 20px; text-decoration: none; color: inherit; background: rgba(10, 10, 10, 0.8); position: relative; transition: 0.2s; }}
-            .item:hover {{ border-color: var(--neon); background: #00151a; box-shadow: 0 0 15px var(--neon); }}
-            .g-name {{ font-size: 10px; opacity: 0.5; display: block; }}
-            .m-name {{ font-size: 16px; display: block; margin-top: 5px; color: #fff; }}
-            .r-val {{ position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-weight: bold; border: 1px solid #333; padding: 5px 10px; }}
+            /* DATA GRID */
+            .metrics {{ display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }}
+            .metric-box {{ background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 1.5rem; border-radius: 12px; }}
+            .metric-box small {{ display: block; color: #666; margin-bottom: 5px; font-size: 0.7rem; text-transform: uppercase; }}
+            .metric-box span {{ font-size: 1.2rem; font-weight: bold; color: var(--accent); }}
             
-            .disabled {{ opacity: 0.1; filter: blur(3px); grayscale(1); }}
+            .status-tag {{ grid-column: span 2; text-align: center; padding: 10px; border-radius: 6px; font-weight: 900; letter-spacing: 2px; }}
+            .pass {{ background: rgba(0, 242, 255, 0.1); color: var(--accent); border: 1px solid var(--accent); }}
+            .fail {{ background: rgba(255, 0, 85, 0.1); color: #ff0055; border: 1px solid #ff0055; }}
         </style>
     </head>
     <body>
-        <div class="vignette"></div>
-        
-        <div class="search-zone" id="search-zone">
-            <h1>VRAM.WIKI</h1>
-            <input type="text" id="search" class="cmd-input" placeholder="ENTER_HARDWARE_OR_MODEL_..." autofocus>
-            <div class="slider-box">
-                <span>LOCAL_VRAM_LIMIT:</span>
-                <input type="range" id="vram-slider" min="4" max="48" value="24">
-                <span id="vram-val">24GB</span>
+        <div class="sidebar">
+            <h1>VRAM<span style="color:var(--accent)">.WIKI</span></h1>
+            
+            <div>
+                <label>Select GPU Hardware</label>
+                <select id="gpu-select">
+                    {''.join([f'<option value="{h["name"]}" data-vram="{h["vram_gb"]}">{h["name"]} ({h["vram_gb"]}GB)</option>' for h in hardware])}
+                </select>
+            </div>
+
+            <div>
+                <label>Target AI Model</label>
+                <select id="model-select">
+                    {''.join([f'<option value="{m["id"]}" data-params="{m["params_b"]}">{m["id"]}</option>' for m in models])}
+                </select>
+            </div>
+
+            <div>
+                <label>Quantization (Precision)</label>
+                <select id="quant-select">
+                    <option value="4">4-bit (Compressed)</option>
+                    <option value="8">8-bit (Balanced)</option>
+                    <option value="16">16-bit (Full Precision)</option>
+                </select>
+            </div>
+
+            <div style="margin-top: auto; font-size: 0.7rem; color: #444;">
+                VERSION 2.0 // DECENTRALIZED DATA NODE
             </div>
         </div>
 
-        <div id="list">{''.join(links)}</div>
+        <div class="main-stage">
+            <div class="audit-card">
+                <div class="visual-center">
+                    <canvas id="vramChart"></canvas>
+                    <div class="chart-label">
+                        <span id="percent-label">0%</span>
+                        <b id="total-val">0 GB</b>
+                    </div>
+                </div>
+
+                <div class="metrics">
+                    <div id="status-tag" class="status-tag">INITIALIZING...</div>
+                    <div class="metric-box">
+                        <small>Required VRAM</small>
+                        <span id="req-vram">0.0 GB</span>
+                    </div>
+                    <div class="metric-box">
+                        <small>System Headroom</small>
+                        <span id="headroom">0.0 GB</span>
+                    </div>
+                    <div class="metric-box">
+                        <small>Model Params</small>
+                        <span id="param-count">0B</span>
+                    </div>
+                    <div class="metric-box">
+                        <small>Context Buffer</small>
+                        <span>1.2 GB</span>
+                    </div>
+                    <a href="#" id="deep-link" style="grid-column: span 2; color: var(--accent); text-align: center; text-decoration: none; font-size: 0.8rem; border: 1px solid var(--border); padding: 10px; border-radius: 8px;">View Full Technical Audit →</a>
+                </div>
+            </div>
+        </div>
 
         <script>
-            const search = document.getElementById('search');
-            const zone = document.getElementById('search-zone');
-            const list = document.getElementById('list');
-            const slider = document.getElementById('vram-slider');
-            const vramVal = document.getElementById('vram-val');
-            const items = document.querySelectorAll('.item');
+            const ctx = document.getElementById('vramChart').getContext('2d');
+            let chart = new Chart(ctx, {{
+                type: 'doughnut',
+                data: {{
+                    datasets: [{{
+                        data: [0, 100],
+                        backgroundColor: ['#00f2ff', '#1a1a1c'],
+                        borderWidth: 0,
+                        circumference: 270,
+                        rotation: 225,
+                        cutout: '85%'
+                    }}]
+                }},
+                options: {{ plugins: {{ tooltip: {{ enabled: false }} }} }}
+            }});
 
-            function filter() {{
-                let q = search.value.toLowerCase();
-                let lim = parseFloat(slider.value);
-                vramVal.innerText = lim + "GB";
-
-                if (q.length > 0) {{
-                    zone.classList.add('active');
-                    list.classList.add('visible');
+            function update() {{
+                const gpu = document.getElementById('gpu-select');
+                const model = document.getElementById('model-select');
+                const quant = document.getElementById('quant-select').value;
+                
+                const vram_total = parseFloat(gpu.options[gpu.selectedIndex].dataset.vram);
+                const params = parseFloat(model.options[model.selectedIndex].dataset.params);
+                
+                // 500 IQ Calculation: (Params * Bits / 8) * Overhead + System Base
+                const needed = ((params * quant) / 8) * 1.2 + 0.8;
+                const percent = Math.min((needed / vram_total) * 100, 100).toFixed(1);
+                
+                document.getElementById('total-val').innerText = needed.toFixed(1) + " GB";
+                document.getElementById('percent-label').innerText = percent + "% VRAM";
+                document.getElementById('req-vram').innerText = needed.toFixed(1) + " GB";
+                document.getElementById('headroom').innerText = (vram_total - needed).toFixed(1) + " GB";
+                document.getElementById('param-count').innerText = params + "B";
+                
+                const tag = document.getElementById('status-tag');
+                if (needed <= vram_total) {{
+                    tag.innerText = "COMPATIBLE";
+                    tag.className = "status-tag pass";
+                    chart.data.datasets[0].backgroundColor[0] = '#00f2ff';
                 }} else {{
-                    zone.classList.remove('active');
-                    list.classList.remove('visible');
+                    tag.innerText = "INSUFFICIENT VRAM";
+                    tag.className = "status-tag fail";
+                    chart.data.datasets[0].backgroundColor[0] = '#ff0055';
                 }}
-
-                items.forEach(i => {{
-                    let req = parseFloat(i.getAttribute('data-vram'));
-                    let match = i.textContent.toLowerCase().includes(q);
-                    i.style.display = match ? 'block' : 'none';
-                    i.classList.toggle('disabled', req > lim);
-                }});
+                
+                chart.data.datasets[0].data = [percent, 100 - percent];
+                chart.update();
             }}
-            
-            search.oninput = filter;
-            slider.oninput = filter;
+
+            document.querySelectorAll('select').forEach(s => s.onchange = update);
+            update();
         </script>
     </body>
     </html>
