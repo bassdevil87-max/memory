@@ -3,28 +3,2079 @@
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>VRAM.wiki | AI Hardware Monopoly</title>
+        <title>VRAM.wiki | AI Hardware Wizard</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
-            body { background: #020617; color: white; font-family: 'Inter', sans-serif; padding: 5vw; }
-            h1 { font-size: 3rem; background: linear-gradient(to right, #3b82f6, #93c5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-            .search-box { width: 100%; padding: 1rem; border-radius: 12px; border: 1px solid #1e293b; background: #0f172a; color: white; margin: 2rem 0; font-size: 1.2rem; }
-            ul { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 15px; }
-            li a { display: block; background: #1e293b; padding: 1.5rem; border-radius: 12px; text-decoration: none; color: #cbd5e1; border: 1px solid transparent; transition: 0.3s; }
-            li a:hover { border-color: #3b82f6; background: #26334d; color: white; transform: scale(1.02); }
+            :root { --bg: #020617; --card: #1e293b; --accent: #3b82f6; --text: #f8fafc; }
+            body { background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; padding: 2rem; margin: 0; }
+            .hero { text-align: center; margin: 4rem auto 2rem; max-width: 800px; }
+            h1 { font-size: 3.5rem; font-weight: 800; letter-spacing: -2px; margin: 0; }
+            
+            .controls { position: sticky; top: 20px; z-index: 100; max-width: 800px; margin: 0 auto 4rem; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); padding: 25px; border-radius: 20px; border: 1px solid #334155; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+            .search-box { width: 100%; padding: 1rem; border-radius: 12px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 1.1rem; margin-bottom: 20px; outline: none; }
+            
+            .slider-container { display: flex; align-items: center; gap: 20px; }
+            .slider { flex-grow: 1; accent-color: var(--accent); cursor: pointer; }
+            .vram-display { min-width: 120px; font-weight: 800; color: var(--accent); font-size: 1.2rem; }
+
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; max-width: 1200px; margin: auto; }
+            .card { background: var(--card); border: 1px solid #334155; padding: 1.5rem; border-radius: 16px; text-decoration: none; color: inherit; transition: 0.3s; display: flex; flex-direction: column; }
+            .card:hover { transform: translateY(-5px); border-color: var(--accent); background: #26334d; }
+            .gpu-tag { color: var(--accent); font-weight: 800; font-size: 0.7rem; text-transform: uppercase; }
+            .model-name { font-size: 1.1rem; font-weight: 600; margin: 10px 0; }
+            .vram-req { font-size: 0.8rem; color: #94a3b8; }
+            .disabled { opacity: 0.15; filter: grayscale(1); pointer-events: none; }
         </style>
     </head>
     <body>
-        <h1>VRAM.wiki</h1>
-        <p>The Global Database for AI Model Hardware Compatibility.</p>
-        <input type="text" class="search-box" placeholder="Search for a model (e.g. Llama 3)..." id="search">
-        <ul id="list"><li><a href="rtx-5090-vs-sentence-transformers-all-minilm-l6-v2.html">Nvidia RTX 5090 vs sentence-transformers/all-MiniLM-L6-v2</a></li><li><a href="rtx-5090-vs-falconsai-nsfw_image_detection.html">Nvidia RTX 5090 vs Falconsai/nsfw_image_detection</a></li><li><a href="rtx-5090-vs-google-electra-base-discriminator.html">Nvidia RTX 5090 vs google/electra-base-discriminator</a></li><li><a href="rtx-5090-vs-google-bert-bert-base-uncased.html">Nvidia RTX 5090 vs google-bert/bert-base-uncased</a></li><li><a href="rtx-5090-vs-dima806-fairface_age_image_detection.html">Nvidia RTX 5090 vs dima806/fairface_age_image_detection</a></li><li><a href="rtx-5090-vs-sentence-transformers-all-mpnet-base-v2.html">Nvidia RTX 5090 vs sentence-transformers/all-mpnet-base-v2</a></li><li><a href="rtx-5090-vs-timm-mobilenetv3_small_100.lamb_in1k.html">Nvidia RTX 5090 vs timm/mobilenetv3_small_100.lamb_in1k</a></li><li><a href="rtx-5090-vs-sentence-transformers-paraphrase-multilingual-minilm-l12-v2.html">Nvidia RTX 5090 vs sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2</a></li><li><a href="rtx-5090-vs-openai-clip-vit-base-patch32.html">Nvidia RTX 5090 vs openai/clip-vit-base-patch32</a></li><li><a href="rtx-5090-vs-pyannote-segmentation-3.0.html">Nvidia RTX 5090 vs pyannote/segmentation-3.0</a></li><li><a href="rtx-5090-vs-laion-clap-htsat-fused.html">Nvidia RTX 5090 vs laion/clap-htsat-fused</a></li><li><a href="rtx-5090-vs-pyannote-speaker-diarization-3.1.html">Nvidia RTX 5090 vs pyannote/speaker-diarization-3.1</a></li><li><a href="rtx-5090-vs-pyannote-wespeaker-voxceleb-resnet34-lm.html">Nvidia RTX 5090 vs pyannote/wespeaker-voxceleb-resnet34-LM</a></li><li><a href="rtx-5090-vs-prajjwal1-bert-tiny.html">Nvidia RTX 5090 vs prajjwal1/bert-tiny</a></li><li><a href="rtx-5090-vs-facebookai-roberta-large.html">Nvidia RTX 5090 vs FacebookAI/roberta-large</a></li><li><a href="rtx-5090-vs-bingsu-adetailer.html">Nvidia RTX 5090 vs Bingsu/adetailer</a></li><li><a href="rtx-5090-vs-colbert-ir-colbertv2.0.html">Nvidia RTX 5090 vs colbert-ir/colbertv2.0</a></li><li><a href="rtx-5090-vs-omni-research-tarsier2-recap-7b.html">Nvidia RTX 5090 vs omni-research/Tarsier2-Recap-7b</a></li><li><a href="rtx-5090-vs-magic-leap-community-superpoint.html">Nvidia RTX 5090 vs magic-leap-community/superpoint</a></li><li><a href="rtx-5090-vs-meta-llama-llama-3.1-8b-instruct.html">Nvidia RTX 5090 vs meta-llama/Llama-3.1-8B-Instruct</a></li><li><a href="rtx-5090-vs-eth-cvg-lightglue_superpoint.html">Nvidia RTX 5090 vs ETH-CVG/lightglue_superpoint</a></li><li><a href="rtx-5090-vs-distilbert-distilbert-base-uncased.html">Nvidia RTX 5090 vs distilbert/distilbert-base-uncased</a></li><li><a href="rtx-5090-vs-qwen-qwen2.5-3b-instruct.html">Nvidia RTX 5090 vs Qwen/Qwen2.5-3B-Instruct</a></li><li><a href="rtx-5090-vs-timm-resnet50.a1_in1k.html">Nvidia RTX 5090 vs timm/resnet50.a1_in1k</a></li><li><a href="rtx-5090-vs-openai-community-gpt2.html">Nvidia RTX 5090 vs openai-community/gpt2</a></li><li><a href="rtx-5090-vs-openai-clip-vit-large-patch14.html">Nvidia RTX 5090 vs openai/clip-vit-large-patch14</a></li><li><a href="rtx-5090-vs-baai-bge-m3.html">Nvidia RTX 5090 vs BAAI/bge-m3</a></li><li><a href="rtx-5090-vs-qwen-qwen3-0.6b.html">Nvidia RTX 5090 vs Qwen/Qwen3-0.6B</a></li><li><a href="rtx-5090-vs-facebook-contriever.html">Nvidia RTX 5090 vs facebook/contriever</a></li><li><a href="rtx-5090-vs-openai-gpt-oss-20b.html">Nvidia RTX 5090 vs openai/gpt-oss-20b</a></li><li><a href="rtx-5090-vs-facebookai-roberta-base.html">Nvidia RTX 5090 vs FacebookAI/roberta-base</a></li><li><a href="rtx-5090-vs-jonatasgrosman-wav2vec2-large-xlsr-53-chinese-zh-cn.html">Nvidia RTX 5090 vs jonatasgrosman/wav2vec2-large-xlsr-53-chinese-zh-cn</a></li><li><a href="rtx-5090-vs-qwen-qwen2.5-7b-instruct.html">Nvidia RTX 5090 vs Qwen/Qwen2.5-7B-Instruct</a></li><li><a href="rtx-5090-vs-facebookai-xlm-roberta-base.html">Nvidia RTX 5090 vs FacebookAI/xlm-roberta-base</a></li><li><a href="rtx-5090-vs-autogluon-chronos-bolt-small.html">Nvidia RTX 5090 vs autogluon/chronos-bolt-small</a></li><li><a href="rtx-5090-vs-cross-encoder-ms-marco-minilm-l6-v2.html">Nvidia RTX 5090 vs cross-encoder/ms-marco-MiniLM-L6-v2</a></li><li><a href="rtx-5090-vs-coqui-xtts-v2.html">Nvidia RTX 5090 vs coqui/XTTS-v2</a></li><li><a href="rtx-5090-vs-comfy-org-wan_2.2_comfyui_repackaged.html">Nvidia RTX 5090 vs Comfy-Org/Wan_2.2_ComfyUI_Repackaged</a></li><li><a href="rtx-5090-vs-usyd-community-vitpose-plus-base.html">Nvidia RTX 5090 vs usyd-community/vitpose-plus-base</a></li><li><a href="rtx-5090-vs-qwen-qwen2.5-vl-3b-instruct.html">Nvidia RTX 5090 vs Qwen/Qwen2.5-VL-3B-Instruct</a></li><li><a href="rtx-5090-vs-qwen-qwen2.5-coder-0.5b-instruct.html">Nvidia RTX 5090 vs Qwen/Qwen2.5-Coder-0.5B-Instruct</a></li><li><a href="rtx-5090-vs-sentence-transformers-paraphrase-multilingual-mpnet-base-v2.html">Nvidia RTX 5090 vs sentence-transformers/paraphrase-multilingual-mpnet-base-v2</a></li><li><a href="rtx-5090-vs-google-siglip-so400m-patch14-384.html">Nvidia RTX 5090 vs google/siglip-so400m-patch14-384</a></li><li><a href="rtx-5090-vs-openai-whisper-large-v3.html">Nvidia RTX 5090 vs openai/whisper-large-v3</a></li><li><a href="rtx-5090-vs-kijai-wanvideo_comfy.html">Nvidia RTX 5090 vs Kijai/WanVideo_comfy</a></li><li><a href="rtx-5090-vs-google-bert-bert-base-multilingual-uncased.html">Nvidia RTX 5090 vs google-bert/bert-base-multilingual-uncased</a></li><li><a href="rtx-5090-vs-jonatasgrosman-wav2vec2-large-xlsr-53-russian.html">Nvidia RTX 5090 vs jonatasgrosman/wav2vec2-large-xlsr-53-russian</a></li><li><a href="rtx-5090-vs-qwen-qwen2.5-1.5b-instruct.html">Nvidia RTX 5090 vs Qwen/Qwen2.5-1.5B-Instruct</a></li><li><a href="rtx-5090-vs-openai-clip-vit-large-patch14-336.html">Nvidia RTX 5090 vs openai/clip-vit-large-patch14-336</a></li><li><a href="rtx-5090-vs-jinaai-jina-embeddings-v3.html">Nvidia RTX 5090 vs jinaai/jina-embeddings-v3</a></li><li><a href="rtx-5090-vs-google-bert-bert-base-multilingual-cased.html">Nvidia RTX 5090 vs google-bert/bert-base-multilingual-cased</a></li><li><a href="rtx-5090-vs-sentence-transformers-multi-qa-mpnet-base-dot-v1.html">Nvidia RTX 5090 vs sentence-transformers/multi-qa-mpnet-base-dot-v1</a></li><li><a href="rtx-5090-vs-deepseek-ai-deepseek-ocr.html">Nvidia RTX 5090 vs deepseek-ai/DeepSeek-OCR</a></li><li><a href="rtx-5090-vs-qwen-qwen3-1.7b.html">Nvidia RTX 5090 vs Qwen/Qwen3-1.7B</a></li><li><a href="rtx-5090-vs-alibaba-nlp-gte-large-en-v1.5.html">Nvidia RTX 5090 vs Alibaba-NLP/gte-large-en-v1.5</a></li><li><a href="rtx-5090-vs-google-vit-base-patch16-224.html">Nvidia RTX 5090 vs google/vit-base-patch16-224</a></li><li><a href="rtx-5090-vs-facebook-bart-large-cnn.html">Nvidia RTX 5090 vs facebook/bart-large-cnn</a></li><li><a href="rtx-5090-vs-facebook-opt-125m.html">Nvidia RTX 5090 vs facebook/opt-125m</a></li><li><a href="rtx-5090-vs-qwen-qwen3-4b-instruct-2507.html">Nvidia RTX 5090 vs Qwen/Qwen3-4B-Instruct-2507</a></li><li><a href="rtx-5090-vs-openai-whisper-small.html">Nvidia RTX 5090 vs openai/whisper-small</a></li><li><a href="rtx-5090-vs-dphn-dolphin-2.9.1-yi-1.5-34b.html">Nvidia RTX 5090 vs dphn/dolphin-2.9.1-yi-1.5-34b</a></li><li><a href="rtx-5090-vs-lpiccinelli-unidepth-v2-vitl14.html">Nvidia RTX 5090 vs lpiccinelli/unidepth-v2-vitl14</a></li><li><a href="rtx-5090-vs-openai-whisper-large-v3-turbo.html">Nvidia RTX 5090 vs openai/whisper-large-v3-turbo</a></li><li><a href="rtx-5090-vs-nvidia-bigvgan_v2_22khz_80band_256x.html">Nvidia RTX 5090 vs nvidia/bigvgan_v2_22khz_80band_256x</a></li><li><a href="rtx-5090-vs-comfy-org-wan_2.1_comfyui_repackaged.html">Nvidia RTX 5090 vs Comfy-Org/Wan_2.1_ComfyUI_repackaged</a></li><li><a href="rtx-5090-vs-emilyalsentzer-bio_clinicalbert.html">Nvidia RTX 5090 vs emilyalsentzer/Bio_ClinicalBERT</a></li><li><a href="rtx-5090-vs-qwen-qwen3-32b.html">Nvidia RTX 5090 vs Qwen/Qwen3-32B</a></li><li><a href="rtx-5090-vs-openai-gpt-oss-120b.html">Nvidia RTX 5090 vs openai/gpt-oss-120b</a></li><li><a href="rtx-5090-vs-autogluon-chronos-bolt-base.html">Nvidia RTX 5090 vs autogluon/chronos-bolt-base</a></li><li><a href="rtx-5090-vs-qwen-qwen3-8b.html">Nvidia RTX 5090 vs Qwen/Qwen3-8B</a></li><li><a href="rtx-5090-vs-roadz-qwen3-1.7b-oxxroad.html">Nvidia RTX 5090 vs roadz/qwen3-1.7b-oxxroad</a></li><li><a href="rtx-5090-vs-hustvl-vitmatte-small-composition-1k.html">Nvidia RTX 5090 vs hustvl/vitmatte-small-composition-1k</a></li><li><a href="rtx-5090-vs-facebook-bart-large-mnli.html">Nvidia RTX 5090 vs facebook/bart-large-mnli</a></li><li><a href="rtx-5090-vs-distilbert-distilbert-base-uncased-finetuned-sst-2-english.html">Nvidia RTX 5090 vs distilbert/distilbert-base-uncased-finetuned-sst-2-english</a></li><li><a href="rtx-5090-vs-hexgrad-kokoro-82m.html">Nvidia RTX 5090 vs hexgrad/Kokoro-82M</a></li><li><a href="rtx-5090-vs-qwen-qwen3-embedding-0.6b.html">Nvidia RTX 5090 vs Qwen/Qwen3-Embedding-0.6B</a></li><li><a href="rtx-5090-vs-sentence-transformers-all-minilm-l12-v2.html">Nvidia RTX 5090 vs sentence-transformers/all-MiniLM-L12-v2</a></li><li><a href="rtx-5090-vs-facebook-w2v-bert-2.0.html">Nvidia RTX 5090 vs facebook/w2v-bert-2.0</a></li><li><a href="rtx-5090-vs-iitolstykh-mivolo_v2.html">Nvidia RTX 5090 vs iitolstykh/mivolo_v2</a></li><li><a href="rtx-5090-vs-comfy-org-z_image_turbo.html">Nvidia RTX 5090 vs Comfy-Org/z_image_turbo</a></li><li><a href="rtx-5090-vs-meta-llama-llama-3.2-1b-instruct.html">Nvidia RTX 5090 vs meta-llama/Llama-3.2-1B-Instruct</a></li><li><a href="rtx-5090-vs-qwen-qwen3-4b.html">Nvidia RTX 5090 vs Qwen/Qwen3-4B</a></li><li><a href="rtx-5090-vs-cardiffnlp-twitter-roberta-base-sentiment-latest.html">Nvidia RTX 5090 vs cardiffnlp/twitter-roberta-base-sentiment-latest</a></li><li><a href="rtx-5090-vs-baai-bge-large-en-v1.5.html">Nvidia RTX 5090 vs BAAI/bge-large-en-v1.5</a></li><li><a href="rtx-5090-vs-facebookai-xlm-roberta-large.html">Nvidia RTX 5090 vs FacebookAI/xlm-roberta-large</a></li><li><a href="rtx-5090-vs-intfloat-multilingual-e5-large.html">Nvidia RTX 5090 vs intfloat/multilingual-e5-large</a></li><li><a href="rtx-5090-vs-baai-bge-base-en-v1.5.html">Nvidia RTX 5090 vs BAAI/bge-base-en-v1.5</a></li><li><a href="rtx-5090-vs-openai-clip-vit-base-patch16.html">Nvidia RTX 5090 vs openai/clip-vit-base-patch16</a></li><li><a href="rtx-5090-vs-nlpaueb-legal-bert-base-uncased.html">Nvidia RTX 5090 vs nlpaueb/legal-bert-base-uncased</a></li><li><a href="rtx-5090-vs-mistralai-mistral-7b-instruct-v0.2.html">Nvidia RTX 5090 vs mistralai/Mistral-7B-Instruct-v0.2</a></li><li><a href="rtx-5090-vs-jonatasgrosman-wav2vec2-large-xlsr-53-portuguese.html">Nvidia RTX 5090 vs jonatasgrosman/wav2vec2-large-xlsr-53-portuguese</a></li><li><a href="rtx-5090-vs-baai-bge-small-en-v1.5.html">Nvidia RTX 5090 vs BAAI/bge-small-en-v1.5</a></li><li><a href="rtx-5090-vs-baai-bge-reranker-v2-m3.html">Nvidia RTX 5090 vs BAAI/bge-reranker-v2-m3</a></li><li><a href="rtx-5090-vs-qwen-qwen2.5-vl-7b-instruct.html">Nvidia RTX 5090 vs Qwen/Qwen2.5-VL-7B-Instruct</a></li><li><a href="rtx-5090-vs-jonatasgrosman-wav2vec2-large-xlsr-53-japanese.html">Nvidia RTX 5090 vs jonatasgrosman/wav2vec2-large-xlsr-53-japanese</a></li><li><a href="rtx-5090-vs-w11wo-indonesian-roberta-base-posp-tagger.html">Nvidia RTX 5090 vs w11wo/indonesian-roberta-base-posp-tagger</a></li><li><a href="rtx-5090-vs-prosusai-finbert.html">Nvidia RTX 5090 vs ProsusAI/finbert</a></li><li><a href="rtx-5090-vs-meta-llama-llama-3.2-1b.html">Nvidia RTX 5090 vs meta-llama/Llama-3.2-1B</a></li><li><a href="rtx-5090-vs-ggml-org-models-moved.html">Nvidia RTX 5090 vs ggml-org/models-moved</a></li><li><a href="rtx-5090-vs-mahmoudashraf-mms-300m-1130-forced-aligner.html">Nvidia RTX 5090 vs MahmoudAshraf/mms-300m-1130-forced-aligner</a></li><li><a href="rtx-4090-vs-sentence-transformers-all-minilm-l6-v2.html">Nvidia RTX 4090 vs sentence-transformers/all-MiniLM-L6-v2</a></li><li><a href="rtx-4090-vs-falconsai-nsfw_image_detection.html">Nvidia RTX 4090 vs Falconsai/nsfw_image_detection</a></li><li><a href="rtx-4090-vs-google-electra-base-discriminator.html">Nvidia RTX 4090 vs google/electra-base-discriminator</a></li><li><a href="rtx-4090-vs-google-bert-bert-base-uncased.html">Nvidia RTX 4090 vs google-bert/bert-base-uncased</a></li><li><a href="rtx-4090-vs-dima806-fairface_age_image_detection.html">Nvidia RTX 4090 vs dima806/fairface_age_image_detection</a></li><li><a href="rtx-4090-vs-sentence-transformers-all-mpnet-base-v2.html">Nvidia RTX 4090 vs sentence-transformers/all-mpnet-base-v2</a></li><li><a href="rtx-4090-vs-timm-mobilenetv3_small_100.lamb_in1k.html">Nvidia RTX 4090 vs timm/mobilenetv3_small_100.lamb_in1k</a></li><li><a href="rtx-4090-vs-sentence-transformers-paraphrase-multilingual-minilm-l12-v2.html">Nvidia RTX 4090 vs sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2</a></li><li><a href="rtx-4090-vs-openai-clip-vit-base-patch32.html">Nvidia RTX 4090 vs openai/clip-vit-base-patch32</a></li><li><a href="rtx-4090-vs-pyannote-segmentation-3.0.html">Nvidia RTX 4090 vs pyannote/segmentation-3.0</a></li><li><a href="rtx-4090-vs-laion-clap-htsat-fused.html">Nvidia RTX 4090 vs laion/clap-htsat-fused</a></li><li><a href="rtx-4090-vs-pyannote-speaker-diarization-3.1.html">Nvidia RTX 4090 vs pyannote/speaker-diarization-3.1</a></li><li><a href="rtx-4090-vs-pyannote-wespeaker-voxceleb-resnet34-lm.html">Nvidia RTX 4090 vs pyannote/wespeaker-voxceleb-resnet34-LM</a></li><li><a href="rtx-4090-vs-prajjwal1-bert-tiny.html">Nvidia RTX 4090 vs prajjwal1/bert-tiny</a></li><li><a href="rtx-4090-vs-facebookai-roberta-large.html">Nvidia RTX 4090 vs FacebookAI/roberta-large</a></li><li><a href="rtx-4090-vs-bingsu-adetailer.html">Nvidia RTX 4090 vs Bingsu/adetailer</a></li><li><a href="rtx-4090-vs-colbert-ir-colbertv2.0.html">Nvidia RTX 4090 vs colbert-ir/colbertv2.0</a></li><li><a href="rtx-4090-vs-omni-research-tarsier2-recap-7b.html">Nvidia RTX 4090 vs omni-research/Tarsier2-Recap-7b</a></li><li><a href="rtx-4090-vs-magic-leap-community-superpoint.html">Nvidia RTX 4090 vs magic-leap-community/superpoint</a></li><li><a href="rtx-4090-vs-meta-llama-llama-3.1-8b-instruct.html">Nvidia RTX 4090 vs meta-llama/Llama-3.1-8B-Instruct</a></li><li><a href="rtx-4090-vs-eth-cvg-lightglue_superpoint.html">Nvidia RTX 4090 vs ETH-CVG/lightglue_superpoint</a></li><li><a href="rtx-4090-vs-distilbert-distilbert-base-uncased.html">Nvidia RTX 4090 vs distilbert/distilbert-base-uncased</a></li><li><a href="rtx-4090-vs-qwen-qwen2.5-3b-instruct.html">Nvidia RTX 4090 vs Qwen/Qwen2.5-3B-Instruct</a></li><li><a href="rtx-4090-vs-timm-resnet50.a1_in1k.html">Nvidia RTX 4090 vs timm/resnet50.a1_in1k</a></li><li><a href="rtx-4090-vs-openai-community-gpt2.html">Nvidia RTX 4090 vs openai-community/gpt2</a></li><li><a href="rtx-4090-vs-openai-clip-vit-large-patch14.html">Nvidia RTX 4090 vs openai/clip-vit-large-patch14</a></li><li><a href="rtx-4090-vs-baai-bge-m3.html">Nvidia RTX 4090 vs BAAI/bge-m3</a></li><li><a href="rtx-4090-vs-qwen-qwen3-0.6b.html">Nvidia RTX 4090 vs Qwen/Qwen3-0.6B</a></li><li><a href="rtx-4090-vs-facebook-contriever.html">Nvidia RTX 4090 vs facebook/contriever</a></li><li><a href="rtx-4090-vs-openai-gpt-oss-20b.html">Nvidia RTX 4090 vs openai/gpt-oss-20b</a></li><li><a href="rtx-4090-vs-facebookai-roberta-base.html">Nvidia RTX 4090 vs FacebookAI/roberta-base</a></li><li><a href="rtx-4090-vs-jonatasgrosman-wav2vec2-large-xlsr-53-chinese-zh-cn.html">Nvidia RTX 4090 vs jonatasgrosman/wav2vec2-large-xlsr-53-chinese-zh-cn</a></li><li><a href="rtx-4090-vs-qwen-qwen2.5-7b-instruct.html">Nvidia RTX 4090 vs Qwen/Qwen2.5-7B-Instruct</a></li><li><a href="rtx-4090-vs-facebookai-xlm-roberta-base.html">Nvidia RTX 4090 vs FacebookAI/xlm-roberta-base</a></li><li><a href="rtx-4090-vs-autogluon-chronos-bolt-small.html">Nvidia RTX 4090 vs autogluon/chronos-bolt-small</a></li><li><a href="rtx-4090-vs-cross-encoder-ms-marco-minilm-l6-v2.html">Nvidia RTX 4090 vs cross-encoder/ms-marco-MiniLM-L6-v2</a></li><li><a href="rtx-4090-vs-coqui-xtts-v2.html">Nvidia RTX 4090 vs coqui/XTTS-v2</a></li><li><a href="rtx-4090-vs-comfy-org-wan_2.2_comfyui_repackaged.html">Nvidia RTX 4090 vs Comfy-Org/Wan_2.2_ComfyUI_Repackaged</a></li><li><a href="rtx-4090-vs-usyd-community-vitpose-plus-base.html">Nvidia RTX 4090 vs usyd-community/vitpose-plus-base</a></li><li><a href="rtx-4090-vs-qwen-qwen2.5-vl-3b-instruct.html">Nvidia RTX 4090 vs Qwen/Qwen2.5-VL-3B-Instruct</a></li><li><a href="rtx-4090-vs-qwen-qwen2.5-coder-0.5b-instruct.html">Nvidia RTX 4090 vs Qwen/Qwen2.5-Coder-0.5B-Instruct</a></li><li><a href="rtx-4090-vs-sentence-transformers-paraphrase-multilingual-mpnet-base-v2.html">Nvidia RTX 4090 vs sentence-transformers/paraphrase-multilingual-mpnet-base-v2</a></li><li><a href="rtx-4090-vs-google-siglip-so400m-patch14-384.html">Nvidia RTX 4090 vs google/siglip-so400m-patch14-384</a></li><li><a href="rtx-4090-vs-openai-whisper-large-v3.html">Nvidia RTX 4090 vs openai/whisper-large-v3</a></li><li><a href="rtx-4090-vs-kijai-wanvideo_comfy.html">Nvidia RTX 4090 vs Kijai/WanVideo_comfy</a></li><li><a href="rtx-4090-vs-google-bert-bert-base-multilingual-uncased.html">Nvidia RTX 4090 vs google-bert/bert-base-multilingual-uncased</a></li><li><a href="rtx-4090-vs-jonatasgrosman-wav2vec2-large-xlsr-53-russian.html">Nvidia RTX 4090 vs jonatasgrosman/wav2vec2-large-xlsr-53-russian</a></li><li><a href="rtx-4090-vs-qwen-qwen2.5-1.5b-instruct.html">Nvidia RTX 4090 vs Qwen/Qwen2.5-1.5B-Instruct</a></li><li><a href="rtx-4090-vs-openai-clip-vit-large-patch14-336.html">Nvidia RTX 4090 vs openai/clip-vit-large-patch14-336</a></li><li><a href="rtx-4090-vs-jinaai-jina-embeddings-v3.html">Nvidia RTX 4090 vs jinaai/jina-embeddings-v3</a></li><li><a href="rtx-4090-vs-google-bert-bert-base-multilingual-cased.html">Nvidia RTX 4090 vs google-bert/bert-base-multilingual-cased</a></li><li><a href="rtx-4090-vs-sentence-transformers-multi-qa-mpnet-base-dot-v1.html">Nvidia RTX 4090 vs sentence-transformers/multi-qa-mpnet-base-dot-v1</a></li><li><a href="rtx-4090-vs-deepseek-ai-deepseek-ocr.html">Nvidia RTX 4090 vs deepseek-ai/DeepSeek-OCR</a></li><li><a href="rtx-4090-vs-qwen-qwen3-1.7b.html">Nvidia RTX 4090 vs Qwen/Qwen3-1.7B</a></li><li><a href="rtx-4090-vs-alibaba-nlp-gte-large-en-v1.5.html">Nvidia RTX 4090 vs Alibaba-NLP/gte-large-en-v1.5</a></li><li><a href="rtx-4090-vs-google-vit-base-patch16-224.html">Nvidia RTX 4090 vs google/vit-base-patch16-224</a></li><li><a href="rtx-4090-vs-facebook-bart-large-cnn.html">Nvidia RTX 4090 vs facebook/bart-large-cnn</a></li><li><a href="rtx-4090-vs-facebook-opt-125m.html">Nvidia RTX 4090 vs facebook/opt-125m</a></li><li><a href="rtx-4090-vs-qwen-qwen3-4b-instruct-2507.html">Nvidia RTX 4090 vs Qwen/Qwen3-4B-Instruct-2507</a></li><li><a href="rtx-4090-vs-openai-whisper-small.html">Nvidia RTX 4090 vs openai/whisper-small</a></li><li><a href="rtx-4090-vs-dphn-dolphin-2.9.1-yi-1.5-34b.html">Nvidia RTX 4090 vs dphn/dolphin-2.9.1-yi-1.5-34b</a></li><li><a href="rtx-4090-vs-lpiccinelli-unidepth-v2-vitl14.html">Nvidia RTX 4090 vs lpiccinelli/unidepth-v2-vitl14</a></li><li><a href="rtx-4090-vs-openai-whisper-large-v3-turbo.html">Nvidia RTX 4090 vs openai/whisper-large-v3-turbo</a></li><li><a href="rtx-4090-vs-nvidia-bigvgan_v2_22khz_80band_256x.html">Nvidia RTX 4090 vs nvidia/bigvgan_v2_22khz_80band_256x</a></li><li><a href="rtx-4090-vs-comfy-org-wan_2.1_comfyui_repackaged.html">Nvidia RTX 4090 vs Comfy-Org/Wan_2.1_ComfyUI_repackaged</a></li><li><a href="rtx-4090-vs-emilyalsentzer-bio_clinicalbert.html">Nvidia RTX 4090 vs emilyalsentzer/Bio_ClinicalBERT</a></li><li><a href="rtx-4090-vs-qwen-qwen3-32b.html">Nvidia RTX 4090 vs Qwen/Qwen3-32B</a></li><li><a href="rtx-4090-vs-openai-gpt-oss-120b.html">Nvidia RTX 4090 vs openai/gpt-oss-120b</a></li><li><a href="rtx-4090-vs-autogluon-chronos-bolt-base.html">Nvidia RTX 4090 vs autogluon/chronos-bolt-base</a></li><li><a href="rtx-4090-vs-qwen-qwen3-8b.html">Nvidia RTX 4090 vs Qwen/Qwen3-8B</a></li><li><a href="rtx-4090-vs-roadz-qwen3-1.7b-oxxroad.html">Nvidia RTX 4090 vs roadz/qwen3-1.7b-oxxroad</a></li><li><a href="rtx-4090-vs-hustvl-vitmatte-small-composition-1k.html">Nvidia RTX 4090 vs hustvl/vitmatte-small-composition-1k</a></li><li><a href="rtx-4090-vs-facebook-bart-large-mnli.html">Nvidia RTX 4090 vs facebook/bart-large-mnli</a></li><li><a href="rtx-4090-vs-distilbert-distilbert-base-uncased-finetuned-sst-2-english.html">Nvidia RTX 4090 vs distilbert/distilbert-base-uncased-finetuned-sst-2-english</a></li><li><a href="rtx-4090-vs-hexgrad-kokoro-82m.html">Nvidia RTX 4090 vs hexgrad/Kokoro-82M</a></li><li><a href="rtx-4090-vs-qwen-qwen3-embedding-0.6b.html">Nvidia RTX 4090 vs Qwen/Qwen3-Embedding-0.6B</a></li><li><a href="rtx-4090-vs-sentence-transformers-all-minilm-l12-v2.html">Nvidia RTX 4090 vs sentence-transformers/all-MiniLM-L12-v2</a></li><li><a href="rtx-4090-vs-facebook-w2v-bert-2.0.html">Nvidia RTX 4090 vs facebook/w2v-bert-2.0</a></li><li><a href="rtx-4090-vs-iitolstykh-mivolo_v2.html">Nvidia RTX 4090 vs iitolstykh/mivolo_v2</a></li><li><a href="rtx-4090-vs-comfy-org-z_image_turbo.html">Nvidia RTX 4090 vs Comfy-Org/z_image_turbo</a></li><li><a href="rtx-4090-vs-meta-llama-llama-3.2-1b-instruct.html">Nvidia RTX 4090 vs meta-llama/Llama-3.2-1B-Instruct</a></li><li><a href="rtx-4090-vs-qwen-qwen3-4b.html">Nvidia RTX 4090 vs Qwen/Qwen3-4B</a></li><li><a href="rtx-4090-vs-cardiffnlp-twitter-roberta-base-sentiment-latest.html">Nvidia RTX 4090 vs cardiffnlp/twitter-roberta-base-sentiment-latest</a></li><li><a href="rtx-4090-vs-baai-bge-large-en-v1.5.html">Nvidia RTX 4090 vs BAAI/bge-large-en-v1.5</a></li><li><a href="rtx-4090-vs-facebookai-xlm-roberta-large.html">Nvidia RTX 4090 vs FacebookAI/xlm-roberta-large</a></li><li><a href="rtx-4090-vs-intfloat-multilingual-e5-large.html">Nvidia RTX 4090 vs intfloat/multilingual-e5-large</a></li><li><a href="rtx-4090-vs-baai-bge-base-en-v1.5.html">Nvidia RTX 4090 vs BAAI/bge-base-en-v1.5</a></li><li><a href="rtx-4090-vs-openai-clip-vit-base-patch16.html">Nvidia RTX 4090 vs openai/clip-vit-base-patch16</a></li><li><a href="rtx-4090-vs-nlpaueb-legal-bert-base-uncased.html">Nvidia RTX 4090 vs nlpaueb/legal-bert-base-uncased</a></li><li><a href="rtx-4090-vs-mistralai-mistral-7b-instruct-v0.2.html">Nvidia RTX 4090 vs mistralai/Mistral-7B-Instruct-v0.2</a></li><li><a href="rtx-4090-vs-jonatasgrosman-wav2vec2-large-xlsr-53-portuguese.html">Nvidia RTX 4090 vs jonatasgrosman/wav2vec2-large-xlsr-53-portuguese</a></li><li><a href="rtx-4090-vs-baai-bge-small-en-v1.5.html">Nvidia RTX 4090 vs BAAI/bge-small-en-v1.5</a></li><li><a href="rtx-4090-vs-baai-bge-reranker-v2-m3.html">Nvidia RTX 4090 vs BAAI/bge-reranker-v2-m3</a></li><li><a href="rtx-4090-vs-qwen-qwen2.5-vl-7b-instruct.html">Nvidia RTX 4090 vs Qwen/Qwen2.5-VL-7B-Instruct</a></li><li><a href="rtx-4090-vs-jonatasgrosman-wav2vec2-large-xlsr-53-japanese.html">Nvidia RTX 4090 vs jonatasgrosman/wav2vec2-large-xlsr-53-japanese</a></li><li><a href="rtx-4090-vs-w11wo-indonesian-roberta-base-posp-tagger.html">Nvidia RTX 4090 vs w11wo/indonesian-roberta-base-posp-tagger</a></li><li><a href="rtx-4090-vs-prosusai-finbert.html">Nvidia RTX 4090 vs ProsusAI/finbert</a></li><li><a href="rtx-4090-vs-meta-llama-llama-3.2-1b.html">Nvidia RTX 4090 vs meta-llama/Llama-3.2-1B</a></li><li><a href="rtx-4090-vs-ggml-org-models-moved.html">Nvidia RTX 4090 vs ggml-org/models-moved</a></li><li><a href="rtx-4090-vs-mahmoudashraf-mms-300m-1130-forced-aligner.html">Nvidia RTX 4090 vs MahmoudAshraf/mms-300m-1130-forced-aligner</a></li><li><a href="rtx-5080-vs-sentence-transformers-all-minilm-l6-v2.html">Nvidia RTX 5080 vs sentence-transformers/all-MiniLM-L6-v2</a></li><li><a href="rtx-5080-vs-falconsai-nsfw_image_detection.html">Nvidia RTX 5080 vs Falconsai/nsfw_image_detection</a></li><li><a href="rtx-5080-vs-google-electra-base-discriminator.html">Nvidia RTX 5080 vs google/electra-base-discriminator</a></li><li><a href="rtx-5080-vs-google-bert-bert-base-uncased.html">Nvidia RTX 5080 vs google-bert/bert-base-uncased</a></li><li><a href="rtx-5080-vs-dima806-fairface_age_image_detection.html">Nvidia RTX 5080 vs dima806/fairface_age_image_detection</a></li><li><a href="rtx-5080-vs-sentence-transformers-all-mpnet-base-v2.html">Nvidia RTX 5080 vs sentence-transformers/all-mpnet-base-v2</a></li><li><a href="rtx-5080-vs-timm-mobilenetv3_small_100.lamb_in1k.html">Nvidia RTX 5080 vs timm/mobilenetv3_small_100.lamb_in1k</a></li><li><a href="rtx-5080-vs-sentence-transformers-paraphrase-multilingual-minilm-l12-v2.html">Nvidia RTX 5080 vs sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2</a></li><li><a href="rtx-5080-vs-openai-clip-vit-base-patch32.html">Nvidia RTX 5080 vs openai/clip-vit-base-patch32</a></li><li><a href="rtx-5080-vs-pyannote-segmentation-3.0.html">Nvidia RTX 5080 vs pyannote/segmentation-3.0</a></li><li><a href="rtx-5080-vs-laion-clap-htsat-fused.html">Nvidia RTX 5080 vs laion/clap-htsat-fused</a></li><li><a href="rtx-5080-vs-pyannote-speaker-diarization-3.1.html">Nvidia RTX 5080 vs pyannote/speaker-diarization-3.1</a></li><li><a href="rtx-5080-vs-pyannote-wespeaker-voxceleb-resnet34-lm.html">Nvidia RTX 5080 vs pyannote/wespeaker-voxceleb-resnet34-LM</a></li><li><a href="rtx-5080-vs-prajjwal1-bert-tiny.html">Nvidia RTX 5080 vs prajjwal1/bert-tiny</a></li><li><a href="rtx-5080-vs-facebookai-roberta-large.html">Nvidia RTX 5080 vs FacebookAI/roberta-large</a></li><li><a href="rtx-5080-vs-bingsu-adetailer.html">Nvidia RTX 5080 vs Bingsu/adetailer</a></li><li><a href="rtx-5080-vs-colbert-ir-colbertv2.0.html">Nvidia RTX 5080 vs colbert-ir/colbertv2.0</a></li><li><a href="rtx-5080-vs-omni-research-tarsier2-recap-7b.html">Nvidia RTX 5080 vs omni-research/Tarsier2-Recap-7b</a></li><li><a href="rtx-5080-vs-magic-leap-community-superpoint.html">Nvidia RTX 5080 vs magic-leap-community/superpoint</a></li><li><a href="rtx-5080-vs-meta-llama-llama-3.1-8b-instruct.html">Nvidia RTX 5080 vs meta-llama/Llama-3.1-8B-Instruct</a></li><li><a href="rtx-5080-vs-eth-cvg-lightglue_superpoint.html">Nvidia RTX 5080 vs ETH-CVG/lightglue_superpoint</a></li><li><a href="rtx-5080-vs-distilbert-distilbert-base-uncased.html">Nvidia RTX 5080 vs distilbert/distilbert-base-uncased</a></li><li><a href="rtx-5080-vs-qwen-qwen2.5-3b-instruct.html">Nvidia RTX 5080 vs Qwen/Qwen2.5-3B-Instruct</a></li><li><a href="rtx-5080-vs-timm-resnet50.a1_in1k.html">Nvidia RTX 5080 vs timm/resnet50.a1_in1k</a></li><li><a href="rtx-5080-vs-openai-community-gpt2.html">Nvidia RTX 5080 vs openai-community/gpt2</a></li><li><a href="rtx-5080-vs-openai-clip-vit-large-patch14.html">Nvidia RTX 5080 vs openai/clip-vit-large-patch14</a></li><li><a href="rtx-5080-vs-baai-bge-m3.html">Nvidia RTX 5080 vs BAAI/bge-m3</a></li><li><a href="rtx-5080-vs-qwen-qwen3-0.6b.html">Nvidia RTX 5080 vs Qwen/Qwen3-0.6B</a></li><li><a href="rtx-5080-vs-facebook-contriever.html">Nvidia RTX 5080 vs facebook/contriever</a></li><li><a href="rtx-5080-vs-openai-gpt-oss-20b.html">Nvidia RTX 5080 vs openai/gpt-oss-20b</a></li><li><a href="rtx-5080-vs-facebookai-roberta-base.html">Nvidia RTX 5080 vs FacebookAI/roberta-base</a></li><li><a href="rtx-5080-vs-jonatasgrosman-wav2vec2-large-xlsr-53-chinese-zh-cn.html">Nvidia RTX 5080 vs jonatasgrosman/wav2vec2-large-xlsr-53-chinese-zh-cn</a></li><li><a href="rtx-5080-vs-qwen-qwen2.5-7b-instruct.html">Nvidia RTX 5080 vs Qwen/Qwen2.5-7B-Instruct</a></li><li><a href="rtx-5080-vs-facebookai-xlm-roberta-base.html">Nvidia RTX 5080 vs FacebookAI/xlm-roberta-base</a></li><li><a href="rtx-5080-vs-autogluon-chronos-bolt-small.html">Nvidia RTX 5080 vs autogluon/chronos-bolt-small</a></li><li><a href="rtx-5080-vs-cross-encoder-ms-marco-minilm-l6-v2.html">Nvidia RTX 5080 vs cross-encoder/ms-marco-MiniLM-L6-v2</a></li><li><a href="rtx-5080-vs-coqui-xtts-v2.html">Nvidia RTX 5080 vs coqui/XTTS-v2</a></li><li><a href="rtx-5080-vs-comfy-org-wan_2.2_comfyui_repackaged.html">Nvidia RTX 5080 vs Comfy-Org/Wan_2.2_ComfyUI_Repackaged</a></li><li><a href="rtx-5080-vs-usyd-community-vitpose-plus-base.html">Nvidia RTX 5080 vs usyd-community/vitpose-plus-base</a></li><li><a href="rtx-5080-vs-qwen-qwen2.5-vl-3b-instruct.html">Nvidia RTX 5080 vs Qwen/Qwen2.5-VL-3B-Instruct</a></li><li><a href="rtx-5080-vs-qwen-qwen2.5-coder-0.5b-instruct.html">Nvidia RTX 5080 vs Qwen/Qwen2.5-Coder-0.5B-Instruct</a></li><li><a href="rtx-5080-vs-sentence-transformers-paraphrase-multilingual-mpnet-base-v2.html">Nvidia RTX 5080 vs sentence-transformers/paraphrase-multilingual-mpnet-base-v2</a></li><li><a href="rtx-5080-vs-google-siglip-so400m-patch14-384.html">Nvidia RTX 5080 vs google/siglip-so400m-patch14-384</a></li><li><a href="rtx-5080-vs-openai-whisper-large-v3.html">Nvidia RTX 5080 vs openai/whisper-large-v3</a></li><li><a href="rtx-5080-vs-kijai-wanvideo_comfy.html">Nvidia RTX 5080 vs Kijai/WanVideo_comfy</a></li><li><a href="rtx-5080-vs-google-bert-bert-base-multilingual-uncased.html">Nvidia RTX 5080 vs google-bert/bert-base-multilingual-uncased</a></li><li><a href="rtx-5080-vs-jonatasgrosman-wav2vec2-large-xlsr-53-russian.html">Nvidia RTX 5080 vs jonatasgrosman/wav2vec2-large-xlsr-53-russian</a></li><li><a href="rtx-5080-vs-qwen-qwen2.5-1.5b-instruct.html">Nvidia RTX 5080 vs Qwen/Qwen2.5-1.5B-Instruct</a></li><li><a href="rtx-5080-vs-openai-clip-vit-large-patch14-336.html">Nvidia RTX 5080 vs openai/clip-vit-large-patch14-336</a></li><li><a href="rtx-5080-vs-jinaai-jina-embeddings-v3.html">Nvidia RTX 5080 vs jinaai/jina-embeddings-v3</a></li><li><a href="rtx-5080-vs-google-bert-bert-base-multilingual-cased.html">Nvidia RTX 5080 vs google-bert/bert-base-multilingual-cased</a></li><li><a href="rtx-5080-vs-sentence-transformers-multi-qa-mpnet-base-dot-v1.html">Nvidia RTX 5080 vs sentence-transformers/multi-qa-mpnet-base-dot-v1</a></li><li><a href="rtx-5080-vs-deepseek-ai-deepseek-ocr.html">Nvidia RTX 5080 vs deepseek-ai/DeepSeek-OCR</a></li><li><a href="rtx-5080-vs-qwen-qwen3-1.7b.html">Nvidia RTX 5080 vs Qwen/Qwen3-1.7B</a></li><li><a href="rtx-5080-vs-alibaba-nlp-gte-large-en-v1.5.html">Nvidia RTX 5080 vs Alibaba-NLP/gte-large-en-v1.5</a></li><li><a href="rtx-5080-vs-google-vit-base-patch16-224.html">Nvidia RTX 5080 vs google/vit-base-patch16-224</a></li><li><a href="rtx-5080-vs-facebook-bart-large-cnn.html">Nvidia RTX 5080 vs facebook/bart-large-cnn</a></li><li><a href="rtx-5080-vs-facebook-opt-125m.html">Nvidia RTX 5080 vs facebook/opt-125m</a></li><li><a href="rtx-5080-vs-qwen-qwen3-4b-instruct-2507.html">Nvidia RTX 5080 vs Qwen/Qwen3-4B-Instruct-2507</a></li><li><a href="rtx-5080-vs-openai-whisper-small.html">Nvidia RTX 5080 vs openai/whisper-small</a></li><li><a href="rtx-5080-vs-dphn-dolphin-2.9.1-yi-1.5-34b.html">Nvidia RTX 5080 vs dphn/dolphin-2.9.1-yi-1.5-34b</a></li><li><a href="rtx-5080-vs-lpiccinelli-unidepth-v2-vitl14.html">Nvidia RTX 5080 vs lpiccinelli/unidepth-v2-vitl14</a></li><li><a href="rtx-5080-vs-openai-whisper-large-v3-turbo.html">Nvidia RTX 5080 vs openai/whisper-large-v3-turbo</a></li><li><a href="rtx-5080-vs-nvidia-bigvgan_v2_22khz_80band_256x.html">Nvidia RTX 5080 vs nvidia/bigvgan_v2_22khz_80band_256x</a></li><li><a href="rtx-5080-vs-comfy-org-wan_2.1_comfyui_repackaged.html">Nvidia RTX 5080 vs Comfy-Org/Wan_2.1_ComfyUI_repackaged</a></li><li><a href="rtx-5080-vs-emilyalsentzer-bio_clinicalbert.html">Nvidia RTX 5080 vs emilyalsentzer/Bio_ClinicalBERT</a></li><li><a href="rtx-5080-vs-qwen-qwen3-32b.html">Nvidia RTX 5080 vs Qwen/Qwen3-32B</a></li><li><a href="rtx-5080-vs-openai-gpt-oss-120b.html">Nvidia RTX 5080 vs openai/gpt-oss-120b</a></li><li><a href="rtx-5080-vs-autogluon-chronos-bolt-base.html">Nvidia RTX 5080 vs autogluon/chronos-bolt-base</a></li><li><a href="rtx-5080-vs-qwen-qwen3-8b.html">Nvidia RTX 5080 vs Qwen/Qwen3-8B</a></li><li><a href="rtx-5080-vs-roadz-qwen3-1.7b-oxxroad.html">Nvidia RTX 5080 vs roadz/qwen3-1.7b-oxxroad</a></li><li><a href="rtx-5080-vs-hustvl-vitmatte-small-composition-1k.html">Nvidia RTX 5080 vs hustvl/vitmatte-small-composition-1k</a></li><li><a href="rtx-5080-vs-facebook-bart-large-mnli.html">Nvidia RTX 5080 vs facebook/bart-large-mnli</a></li><li><a href="rtx-5080-vs-distilbert-distilbert-base-uncased-finetuned-sst-2-english.html">Nvidia RTX 5080 vs distilbert/distilbert-base-uncased-finetuned-sst-2-english</a></li><li><a href="rtx-5080-vs-hexgrad-kokoro-82m.html">Nvidia RTX 5080 vs hexgrad/Kokoro-82M</a></li><li><a href="rtx-5080-vs-qwen-qwen3-embedding-0.6b.html">Nvidia RTX 5080 vs Qwen/Qwen3-Embedding-0.6B</a></li><li><a href="rtx-5080-vs-sentence-transformers-all-minilm-l12-v2.html">Nvidia RTX 5080 vs sentence-transformers/all-MiniLM-L12-v2</a></li><li><a href="rtx-5080-vs-facebook-w2v-bert-2.0.html">Nvidia RTX 5080 vs facebook/w2v-bert-2.0</a></li><li><a href="rtx-5080-vs-iitolstykh-mivolo_v2.html">Nvidia RTX 5080 vs iitolstykh/mivolo_v2</a></li><li><a href="rtx-5080-vs-comfy-org-z_image_turbo.html">Nvidia RTX 5080 vs Comfy-Org/z_image_turbo</a></li><li><a href="rtx-5080-vs-meta-llama-llama-3.2-1b-instruct.html">Nvidia RTX 5080 vs meta-llama/Llama-3.2-1B-Instruct</a></li><li><a href="rtx-5080-vs-qwen-qwen3-4b.html">Nvidia RTX 5080 vs Qwen/Qwen3-4B</a></li><li><a href="rtx-5080-vs-cardiffnlp-twitter-roberta-base-sentiment-latest.html">Nvidia RTX 5080 vs cardiffnlp/twitter-roberta-base-sentiment-latest</a></li><li><a href="rtx-5080-vs-baai-bge-large-en-v1.5.html">Nvidia RTX 5080 vs BAAI/bge-large-en-v1.5</a></li><li><a href="rtx-5080-vs-facebookai-xlm-roberta-large.html">Nvidia RTX 5080 vs FacebookAI/xlm-roberta-large</a></li><li><a href="rtx-5080-vs-intfloat-multilingual-e5-large.html">Nvidia RTX 5080 vs intfloat/multilingual-e5-large</a></li><li><a href="rtx-5080-vs-baai-bge-base-en-v1.5.html">Nvidia RTX 5080 vs BAAI/bge-base-en-v1.5</a></li><li><a href="rtx-5080-vs-openai-clip-vit-base-patch16.html">Nvidia RTX 5080 vs openai/clip-vit-base-patch16</a></li><li><a href="rtx-5080-vs-nlpaueb-legal-bert-base-uncased.html">Nvidia RTX 5080 vs nlpaueb/legal-bert-base-uncased</a></li><li><a href="rtx-5080-vs-mistralai-mistral-7b-instruct-v0.2.html">Nvidia RTX 5080 vs mistralai/Mistral-7B-Instruct-v0.2</a></li><li><a href="rtx-5080-vs-jonatasgrosman-wav2vec2-large-xlsr-53-portuguese.html">Nvidia RTX 5080 vs jonatasgrosman/wav2vec2-large-xlsr-53-portuguese</a></li><li><a href="rtx-5080-vs-baai-bge-small-en-v1.5.html">Nvidia RTX 5080 vs BAAI/bge-small-en-v1.5</a></li><li><a href="rtx-5080-vs-baai-bge-reranker-v2-m3.html">Nvidia RTX 5080 vs BAAI/bge-reranker-v2-m3</a></li><li><a href="rtx-5080-vs-qwen-qwen2.5-vl-7b-instruct.html">Nvidia RTX 5080 vs Qwen/Qwen2.5-VL-7B-Instruct</a></li><li><a href="rtx-5080-vs-jonatasgrosman-wav2vec2-large-xlsr-53-japanese.html">Nvidia RTX 5080 vs jonatasgrosman/wav2vec2-large-xlsr-53-japanese</a></li><li><a href="rtx-5080-vs-w11wo-indonesian-roberta-base-posp-tagger.html">Nvidia RTX 5080 vs w11wo/indonesian-roberta-base-posp-tagger</a></li><li><a href="rtx-5080-vs-prosusai-finbert.html">Nvidia RTX 5080 vs ProsusAI/finbert</a></li><li><a href="rtx-5080-vs-meta-llama-llama-3.2-1b.html">Nvidia RTX 5080 vs meta-llama/Llama-3.2-1B</a></li><li><a href="rtx-5080-vs-ggml-org-models-moved.html">Nvidia RTX 5080 vs ggml-org/models-moved</a></li><li><a href="rtx-5080-vs-mahmoudashraf-mms-300m-1130-forced-aligner.html">Nvidia RTX 5080 vs MahmoudAshraf/mms-300m-1130-forced-aligner</a></li><li><a href="mac-m4-max-vs-sentence-transformers-all-minilm-l6-v2.html">Apple M4 Max vs sentence-transformers/all-MiniLM-L6-v2</a></li><li><a href="mac-m4-max-vs-falconsai-nsfw_image_detection.html">Apple M4 Max vs Falconsai/nsfw_image_detection</a></li><li><a href="mac-m4-max-vs-google-electra-base-discriminator.html">Apple M4 Max vs google/electra-base-discriminator</a></li><li><a href="mac-m4-max-vs-google-bert-bert-base-uncased.html">Apple M4 Max vs google-bert/bert-base-uncased</a></li><li><a href="mac-m4-max-vs-dima806-fairface_age_image_detection.html">Apple M4 Max vs dima806/fairface_age_image_detection</a></li><li><a href="mac-m4-max-vs-sentence-transformers-all-mpnet-base-v2.html">Apple M4 Max vs sentence-transformers/all-mpnet-base-v2</a></li><li><a href="mac-m4-max-vs-timm-mobilenetv3_small_100.lamb_in1k.html">Apple M4 Max vs timm/mobilenetv3_small_100.lamb_in1k</a></li><li><a href="mac-m4-max-vs-sentence-transformers-paraphrase-multilingual-minilm-l12-v2.html">Apple M4 Max vs sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2</a></li><li><a href="mac-m4-max-vs-openai-clip-vit-base-patch32.html">Apple M4 Max vs openai/clip-vit-base-patch32</a></li><li><a href="mac-m4-max-vs-pyannote-segmentation-3.0.html">Apple M4 Max vs pyannote/segmentation-3.0</a></li><li><a href="mac-m4-max-vs-laion-clap-htsat-fused.html">Apple M4 Max vs laion/clap-htsat-fused</a></li><li><a href="mac-m4-max-vs-pyannote-speaker-diarization-3.1.html">Apple M4 Max vs pyannote/speaker-diarization-3.1</a></li><li><a href="mac-m4-max-vs-pyannote-wespeaker-voxceleb-resnet34-lm.html">Apple M4 Max vs pyannote/wespeaker-voxceleb-resnet34-LM</a></li><li><a href="mac-m4-max-vs-prajjwal1-bert-tiny.html">Apple M4 Max vs prajjwal1/bert-tiny</a></li><li><a href="mac-m4-max-vs-facebookai-roberta-large.html">Apple M4 Max vs FacebookAI/roberta-large</a></li><li><a href="mac-m4-max-vs-bingsu-adetailer.html">Apple M4 Max vs Bingsu/adetailer</a></li><li><a href="mac-m4-max-vs-colbert-ir-colbertv2.0.html">Apple M4 Max vs colbert-ir/colbertv2.0</a></li><li><a href="mac-m4-max-vs-omni-research-tarsier2-recap-7b.html">Apple M4 Max vs omni-research/Tarsier2-Recap-7b</a></li><li><a href="mac-m4-max-vs-magic-leap-community-superpoint.html">Apple M4 Max vs magic-leap-community/superpoint</a></li><li><a href="mac-m4-max-vs-meta-llama-llama-3.1-8b-instruct.html">Apple M4 Max vs meta-llama/Llama-3.1-8B-Instruct</a></li><li><a href="mac-m4-max-vs-eth-cvg-lightglue_superpoint.html">Apple M4 Max vs ETH-CVG/lightglue_superpoint</a></li><li><a href="mac-m4-max-vs-distilbert-distilbert-base-uncased.html">Apple M4 Max vs distilbert/distilbert-base-uncased</a></li><li><a href="mac-m4-max-vs-qwen-qwen2.5-3b-instruct.html">Apple M4 Max vs Qwen/Qwen2.5-3B-Instruct</a></li><li><a href="mac-m4-max-vs-timm-resnet50.a1_in1k.html">Apple M4 Max vs timm/resnet50.a1_in1k</a></li><li><a href="mac-m4-max-vs-openai-community-gpt2.html">Apple M4 Max vs openai-community/gpt2</a></li><li><a href="mac-m4-max-vs-openai-clip-vit-large-patch14.html">Apple M4 Max vs openai/clip-vit-large-patch14</a></li><li><a href="mac-m4-max-vs-baai-bge-m3.html">Apple M4 Max vs BAAI/bge-m3</a></li><li><a href="mac-m4-max-vs-qwen-qwen3-0.6b.html">Apple M4 Max vs Qwen/Qwen3-0.6B</a></li><li><a href="mac-m4-max-vs-facebook-contriever.html">Apple M4 Max vs facebook/contriever</a></li><li><a href="mac-m4-max-vs-openai-gpt-oss-20b.html">Apple M4 Max vs openai/gpt-oss-20b</a></li><li><a href="mac-m4-max-vs-facebookai-roberta-base.html">Apple M4 Max vs FacebookAI/roberta-base</a></li><li><a href="mac-m4-max-vs-jonatasgrosman-wav2vec2-large-xlsr-53-chinese-zh-cn.html">Apple M4 Max vs jonatasgrosman/wav2vec2-large-xlsr-53-chinese-zh-cn</a></li><li><a href="mac-m4-max-vs-qwen-qwen2.5-7b-instruct.html">Apple M4 Max vs Qwen/Qwen2.5-7B-Instruct</a></li><li><a href="mac-m4-max-vs-facebookai-xlm-roberta-base.html">Apple M4 Max vs FacebookAI/xlm-roberta-base</a></li><li><a href="mac-m4-max-vs-autogluon-chronos-bolt-small.html">Apple M4 Max vs autogluon/chronos-bolt-small</a></li><li><a href="mac-m4-max-vs-cross-encoder-ms-marco-minilm-l6-v2.html">Apple M4 Max vs cross-encoder/ms-marco-MiniLM-L6-v2</a></li><li><a href="mac-m4-max-vs-coqui-xtts-v2.html">Apple M4 Max vs coqui/XTTS-v2</a></li><li><a href="mac-m4-max-vs-comfy-org-wan_2.2_comfyui_repackaged.html">Apple M4 Max vs Comfy-Org/Wan_2.2_ComfyUI_Repackaged</a></li><li><a href="mac-m4-max-vs-usyd-community-vitpose-plus-base.html">Apple M4 Max vs usyd-community/vitpose-plus-base</a></li><li><a href="mac-m4-max-vs-qwen-qwen2.5-vl-3b-instruct.html">Apple M4 Max vs Qwen/Qwen2.5-VL-3B-Instruct</a></li><li><a href="mac-m4-max-vs-qwen-qwen2.5-coder-0.5b-instruct.html">Apple M4 Max vs Qwen/Qwen2.5-Coder-0.5B-Instruct</a></li><li><a href="mac-m4-max-vs-sentence-transformers-paraphrase-multilingual-mpnet-base-v2.html">Apple M4 Max vs sentence-transformers/paraphrase-multilingual-mpnet-base-v2</a></li><li><a href="mac-m4-max-vs-google-siglip-so400m-patch14-384.html">Apple M4 Max vs google/siglip-so400m-patch14-384</a></li><li><a href="mac-m4-max-vs-openai-whisper-large-v3.html">Apple M4 Max vs openai/whisper-large-v3</a></li><li><a href="mac-m4-max-vs-kijai-wanvideo_comfy.html">Apple M4 Max vs Kijai/WanVideo_comfy</a></li><li><a href="mac-m4-max-vs-google-bert-bert-base-multilingual-uncased.html">Apple M4 Max vs google-bert/bert-base-multilingual-uncased</a></li><li><a href="mac-m4-max-vs-jonatasgrosman-wav2vec2-large-xlsr-53-russian.html">Apple M4 Max vs jonatasgrosman/wav2vec2-large-xlsr-53-russian</a></li><li><a href="mac-m4-max-vs-qwen-qwen2.5-1.5b-instruct.html">Apple M4 Max vs Qwen/Qwen2.5-1.5B-Instruct</a></li><li><a href="mac-m4-max-vs-openai-clip-vit-large-patch14-336.html">Apple M4 Max vs openai/clip-vit-large-patch14-336</a></li><li><a href="mac-m4-max-vs-jinaai-jina-embeddings-v3.html">Apple M4 Max vs jinaai/jina-embeddings-v3</a></li><li><a href="mac-m4-max-vs-google-bert-bert-base-multilingual-cased.html">Apple M4 Max vs google-bert/bert-base-multilingual-cased</a></li><li><a href="mac-m4-max-vs-sentence-transformers-multi-qa-mpnet-base-dot-v1.html">Apple M4 Max vs sentence-transformers/multi-qa-mpnet-base-dot-v1</a></li><li><a href="mac-m4-max-vs-deepseek-ai-deepseek-ocr.html">Apple M4 Max vs deepseek-ai/DeepSeek-OCR</a></li><li><a href="mac-m4-max-vs-qwen-qwen3-1.7b.html">Apple M4 Max vs Qwen/Qwen3-1.7B</a></li><li><a href="mac-m4-max-vs-alibaba-nlp-gte-large-en-v1.5.html">Apple M4 Max vs Alibaba-NLP/gte-large-en-v1.5</a></li><li><a href="mac-m4-max-vs-google-vit-base-patch16-224.html">Apple M4 Max vs google/vit-base-patch16-224</a></li><li><a href="mac-m4-max-vs-facebook-bart-large-cnn.html">Apple M4 Max vs facebook/bart-large-cnn</a></li><li><a href="mac-m4-max-vs-facebook-opt-125m.html">Apple M4 Max vs facebook/opt-125m</a></li><li><a href="mac-m4-max-vs-qwen-qwen3-4b-instruct-2507.html">Apple M4 Max vs Qwen/Qwen3-4B-Instruct-2507</a></li><li><a href="mac-m4-max-vs-openai-whisper-small.html">Apple M4 Max vs openai/whisper-small</a></li><li><a href="mac-m4-max-vs-dphn-dolphin-2.9.1-yi-1.5-34b.html">Apple M4 Max vs dphn/dolphin-2.9.1-yi-1.5-34b</a></li><li><a href="mac-m4-max-vs-lpiccinelli-unidepth-v2-vitl14.html">Apple M4 Max vs lpiccinelli/unidepth-v2-vitl14</a></li><li><a href="mac-m4-max-vs-openai-whisper-large-v3-turbo.html">Apple M4 Max vs openai/whisper-large-v3-turbo</a></li><li><a href="mac-m4-max-vs-nvidia-bigvgan_v2_22khz_80band_256x.html">Apple M4 Max vs nvidia/bigvgan_v2_22khz_80band_256x</a></li><li><a href="mac-m4-max-vs-comfy-org-wan_2.1_comfyui_repackaged.html">Apple M4 Max vs Comfy-Org/Wan_2.1_ComfyUI_repackaged</a></li><li><a href="mac-m4-max-vs-emilyalsentzer-bio_clinicalbert.html">Apple M4 Max vs emilyalsentzer/Bio_ClinicalBERT</a></li><li><a href="mac-m4-max-vs-qwen-qwen3-32b.html">Apple M4 Max vs Qwen/Qwen3-32B</a></li><li><a href="mac-m4-max-vs-openai-gpt-oss-120b.html">Apple M4 Max vs openai/gpt-oss-120b</a></li><li><a href="mac-m4-max-vs-autogluon-chronos-bolt-base.html">Apple M4 Max vs autogluon/chronos-bolt-base</a></li><li><a href="mac-m4-max-vs-qwen-qwen3-8b.html">Apple M4 Max vs Qwen/Qwen3-8B</a></li><li><a href="mac-m4-max-vs-roadz-qwen3-1.7b-oxxroad.html">Apple M4 Max vs roadz/qwen3-1.7b-oxxroad</a></li><li><a href="mac-m4-max-vs-hustvl-vitmatte-small-composition-1k.html">Apple M4 Max vs hustvl/vitmatte-small-composition-1k</a></li><li><a href="mac-m4-max-vs-facebook-bart-large-mnli.html">Apple M4 Max vs facebook/bart-large-mnli</a></li><li><a href="mac-m4-max-vs-distilbert-distilbert-base-uncased-finetuned-sst-2-english.html">Apple M4 Max vs distilbert/distilbert-base-uncased-finetuned-sst-2-english</a></li><li><a href="mac-m4-max-vs-hexgrad-kokoro-82m.html">Apple M4 Max vs hexgrad/Kokoro-82M</a></li><li><a href="mac-m4-max-vs-qwen-qwen3-embedding-0.6b.html">Apple M4 Max vs Qwen/Qwen3-Embedding-0.6B</a></li><li><a href="mac-m4-max-vs-sentence-transformers-all-minilm-l12-v2.html">Apple M4 Max vs sentence-transformers/all-MiniLM-L12-v2</a></li><li><a href="mac-m4-max-vs-facebook-w2v-bert-2.0.html">Apple M4 Max vs facebook/w2v-bert-2.0</a></li><li><a href="mac-m4-max-vs-iitolstykh-mivolo_v2.html">Apple M4 Max vs iitolstykh/mivolo_v2</a></li><li><a href="mac-m4-max-vs-comfy-org-z_image_turbo.html">Apple M4 Max vs Comfy-Org/z_image_turbo</a></li><li><a href="mac-m4-max-vs-meta-llama-llama-3.2-1b-instruct.html">Apple M4 Max vs meta-llama/Llama-3.2-1B-Instruct</a></li><li><a href="mac-m4-max-vs-qwen-qwen3-4b.html">Apple M4 Max vs Qwen/Qwen3-4B</a></li><li><a href="mac-m4-max-vs-cardiffnlp-twitter-roberta-base-sentiment-latest.html">Apple M4 Max vs cardiffnlp/twitter-roberta-base-sentiment-latest</a></li><li><a href="mac-m4-max-vs-baai-bge-large-en-v1.5.html">Apple M4 Max vs BAAI/bge-large-en-v1.5</a></li><li><a href="mac-m4-max-vs-facebookai-xlm-roberta-large.html">Apple M4 Max vs FacebookAI/xlm-roberta-large</a></li><li><a href="mac-m4-max-vs-intfloat-multilingual-e5-large.html">Apple M4 Max vs intfloat/multilingual-e5-large</a></li><li><a href="mac-m4-max-vs-baai-bge-base-en-v1.5.html">Apple M4 Max vs BAAI/bge-base-en-v1.5</a></li><li><a href="mac-m4-max-vs-openai-clip-vit-base-patch16.html">Apple M4 Max vs openai/clip-vit-base-patch16</a></li><li><a href="mac-m4-max-vs-nlpaueb-legal-bert-base-uncased.html">Apple M4 Max vs nlpaueb/legal-bert-base-uncased</a></li><li><a href="mac-m4-max-vs-mistralai-mistral-7b-instruct-v0.2.html">Apple M4 Max vs mistralai/Mistral-7B-Instruct-v0.2</a></li><li><a href="mac-m4-max-vs-jonatasgrosman-wav2vec2-large-xlsr-53-portuguese.html">Apple M4 Max vs jonatasgrosman/wav2vec2-large-xlsr-53-portuguese</a></li><li><a href="mac-m4-max-vs-baai-bge-small-en-v1.5.html">Apple M4 Max vs BAAI/bge-small-en-v1.5</a></li><li><a href="mac-m4-max-vs-baai-bge-reranker-v2-m3.html">Apple M4 Max vs BAAI/bge-reranker-v2-m3</a></li><li><a href="mac-m4-max-vs-qwen-qwen2.5-vl-7b-instruct.html">Apple M4 Max vs Qwen/Qwen2.5-VL-7B-Instruct</a></li><li><a href="mac-m4-max-vs-jonatasgrosman-wav2vec2-large-xlsr-53-japanese.html">Apple M4 Max vs jonatasgrosman/wav2vec2-large-xlsr-53-japanese</a></li><li><a href="mac-m4-max-vs-w11wo-indonesian-roberta-base-posp-tagger.html">Apple M4 Max vs w11wo/indonesian-roberta-base-posp-tagger</a></li><li><a href="mac-m4-max-vs-prosusai-finbert.html">Apple M4 Max vs ProsusAI/finbert</a></li><li><a href="mac-m4-max-vs-meta-llama-llama-3.2-1b.html">Apple M4 Max vs meta-llama/Llama-3.2-1B</a></li><li><a href="mac-m4-max-vs-ggml-org-models-moved.html">Apple M4 Max vs ggml-org/models-moved</a></li><li><a href="mac-m4-max-vs-mahmoudashraf-mms-300m-1130-forced-aligner.html">Apple M4 Max vs MahmoudAshraf/mms-300m-1130-forced-aligner</a></li></ul>
+        <div class="hero">
+            <h1>VRAM<span style="color:var(--accent)">.wiki</span></h1>
+            <p style="color:#94a3b8">The AI Hardware Matchmaker</p>
+        </div>
+
+        <div class="controls">
+            <input type="text" id="search" class="search-box" placeholder="Search Model or GPU...">
+            <div class="slider-container">
+                <span>Your VRAM:</span>
+                <input type="range" id="vram-slider" class="slider" min="4" max="48" value="24">
+                <span class="vram-display" id="vram-val">24 GB</span>
+            </div>
+        </div>
+
+        <div class="grid" id="list">
+                <a href="rtx-5090-vs-sentence-transformers-all-minilm-l6-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">sentence-transformers/all-MiniLM-L6-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-falconsai-nsfw_image_detection.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Falconsai/nsfw_image_detection</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-google-electra-base-discriminator.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">google/electra-base-discriminator</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-google-bert-bert-base-uncased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">google-bert/bert-base-uncased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-dima806-fairface_age_image_detection.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">dima806/fairface_age_image_detection</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-sentence-transformers-all-mpnet-base-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">sentence-transformers/all-mpnet-base-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-timm-mobilenetv3_small_100.lamb_in1k.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">timm/mobilenetv3_small_100.lamb_in1k</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-sentence-transformers-paraphrase-multilingual-minilm-l12-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-openai-clip-vit-base-patch32.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">openai/clip-vit-base-patch32</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-pyannote-segmentation-3.0.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">pyannote/segmentation-3.0</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-laion-clap-htsat-fused.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">laion/clap-htsat-fused</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-pyannote-speaker-diarization-3.1.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">pyannote/speaker-diarization-3.1</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-pyannote-wespeaker-voxceleb-resnet34-lm.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">pyannote/wespeaker-voxceleb-resnet34-LM</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-prajjwal1-bert-tiny.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">prajjwal1/bert-tiny</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-facebookai-roberta-large.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">FacebookAI/roberta-large</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-bingsu-adetailer.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Bingsu/adetailer</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-colbert-ir-colbertv2.0.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">colbert-ir/colbertv2.0</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-omni-research-tarsier2-recap-7b.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">omni-research/Tarsier2-Recap-7b</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-magic-leap-community-superpoint.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">magic-leap-community/superpoint</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-meta-llama-llama-3.1-8b-instruct.html" class="card" data-vram="5.6">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">meta-llama/Llama-3.1-8B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 5.6GB</span>
+                </a>
+                <a href="rtx-5090-vs-eth-cvg-lightglue_superpoint.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">ETH-CVG/lightglue_superpoint</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-distilbert-distilbert-base-uncased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">distilbert/distilbert-base-uncased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-qwen-qwen2.5-3b-instruct.html" class="card" data-vram="2.5">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Qwen/Qwen2.5-3B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 2.5GB</span>
+                </a>
+                <a href="rtx-5090-vs-timm-resnet50.a1_in1k.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">timm/resnet50.a1_in1k</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-openai-community-gpt2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">openai-community/gpt2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-openai-clip-vit-large-patch14.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">openai/clip-vit-large-patch14</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-baai-bge-m3.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">BAAI/bge-m3</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-qwen-qwen3-0.6b.html" class="card" data-vram="1.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Qwen/Qwen3-0.6B</span>
+                    <span class="vram-req">Min VRAM: 1.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-facebook-contriever.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">facebook/contriever</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-openai-gpt-oss-20b.html" class="card" data-vram="13.1">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">openai/gpt-oss-20b</span>
+                    <span class="vram-req">Min VRAM: 13.1GB</span>
+                </a>
+                <a href="rtx-5090-vs-facebookai-roberta-base.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">FacebookAI/roberta-base</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-jonatasgrosman-wav2vec2-large-xlsr-53-chinese-zh-cn.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">jonatasgrosman/wav2vec2-large-xlsr-53-chinese-zh-cn</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-qwen-qwen2.5-7b-instruct.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Qwen/Qwen2.5-7B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-facebookai-xlm-roberta-base.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">FacebookAI/xlm-roberta-base</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-autogluon-chronos-bolt-small.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">autogluon/chronos-bolt-small</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-cross-encoder-ms-marco-minilm-l6-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">cross-encoder/ms-marco-MiniLM-L6-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-coqui-xtts-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">coqui/XTTS-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-comfy-org-wan_2.2_comfyui_repackaged.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Comfy-Org/Wan_2.2_ComfyUI_Repackaged</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-usyd-community-vitpose-plus-base.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">usyd-community/vitpose-plus-base</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-qwen-qwen2.5-vl-3b-instruct.html" class="card" data-vram="2.5">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Qwen/Qwen2.5-VL-3B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 2.5GB</span>
+                </a>
+                <a href="rtx-5090-vs-qwen-qwen2.5-coder-0.5b-instruct.html" class="card" data-vram="0.9">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Qwen/Qwen2.5-Coder-0.5B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 0.9GB</span>
+                </a>
+                <a href="rtx-5090-vs-sentence-transformers-paraphrase-multilingual-mpnet-base-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">sentence-transformers/paraphrase-multilingual-mpnet-base-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-google-siglip-so400m-patch14-384.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">google/siglip-so400m-patch14-384</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-openai-whisper-large-v3.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">openai/whisper-large-v3</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-kijai-wanvideo_comfy.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Kijai/WanVideo_comfy</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-google-bert-bert-base-multilingual-uncased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">google-bert/bert-base-multilingual-uncased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-jonatasgrosman-wav2vec2-large-xlsr-53-russian.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">jonatasgrosman/wav2vec2-large-xlsr-53-russian</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-qwen-qwen2.5-1.5b-instruct.html" class="card" data-vram="1.5">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Qwen/Qwen2.5-1.5B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 1.5GB</span>
+                </a>
+                <a href="rtx-5090-vs-openai-clip-vit-large-patch14-336.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">openai/clip-vit-large-patch14-336</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-jinaai-jina-embeddings-v3.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">jinaai/jina-embeddings-v3</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-google-bert-bert-base-multilingual-cased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">google-bert/bert-base-multilingual-cased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-sentence-transformers-multi-qa-mpnet-base-dot-v1.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">sentence-transformers/multi-qa-mpnet-base-dot-v1</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-deepseek-ai-deepseek-ocr.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">deepseek-ai/DeepSeek-OCR</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-qwen-qwen3-1.7b.html" class="card" data-vram="1.7">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Qwen/Qwen3-1.7B</span>
+                    <span class="vram-req">Min VRAM: 1.7GB</span>
+                </a>
+                <a href="rtx-5090-vs-alibaba-nlp-gte-large-en-v1.5.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Alibaba-NLP/gte-large-en-v1.5</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-google-vit-base-patch16-224.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">google/vit-base-patch16-224</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-facebook-bart-large-cnn.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">facebook/bart-large-cnn</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-facebook-opt-125m.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">facebook/opt-125m</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-qwen-qwen3-4b-instruct-2507.html" class="card" data-vram="3.1">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Qwen/Qwen3-4B-Instruct-2507</span>
+                    <span class="vram-req">Min VRAM: 3.1GB</span>
+                </a>
+                <a href="rtx-5090-vs-openai-whisper-small.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">openai/whisper-small</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-dphn-dolphin-2.9.1-yi-1.5-34b.html" class="card" data-vram="21.9">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">dphn/dolphin-2.9.1-yi-1.5-34b</span>
+                    <span class="vram-req">Min VRAM: 21.9GB</span>
+                </a>
+                <a href="rtx-5090-vs-lpiccinelli-unidepth-v2-vitl14.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">lpiccinelli/unidepth-v2-vitl14</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-openai-whisper-large-v3-turbo.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">openai/whisper-large-v3-turbo</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-nvidia-bigvgan_v2_22khz_80band_256x.html" class="card" data-vram="50.6">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">nvidia/bigvgan_v2_22khz_80band_256x</span>
+                    <span class="vram-req">Min VRAM: 50.6GB</span>
+                </a>
+                <a href="rtx-5090-vs-comfy-org-wan_2.1_comfyui_repackaged.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Comfy-Org/Wan_2.1_ComfyUI_repackaged</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-emilyalsentzer-bio_clinicalbert.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">emilyalsentzer/Bio_ClinicalBERT</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-qwen-qwen3-32b.html" class="card" data-vram="20.6">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Qwen/Qwen3-32B</span>
+                    <span class="vram-req">Min VRAM: 20.6GB</span>
+                </a>
+                <a href="rtx-5090-vs-openai-gpt-oss-120b.html" class="card" data-vram="75.6">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">openai/gpt-oss-120b</span>
+                    <span class="vram-req">Min VRAM: 75.6GB</span>
+                </a>
+                <a href="rtx-5090-vs-autogluon-chronos-bolt-base.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">autogluon/chronos-bolt-base</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-qwen-qwen3-8b.html" class="card" data-vram="5.6">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Qwen/Qwen3-8B</span>
+                    <span class="vram-req">Min VRAM: 5.6GB</span>
+                </a>
+                <a href="rtx-5090-vs-roadz-qwen3-1.7b-oxxroad.html" class="card" data-vram="1.7">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">roadz/qwen3-1.7b-oxxroad</span>
+                    <span class="vram-req">Min VRAM: 1.7GB</span>
+                </a>
+                <a href="rtx-5090-vs-hustvl-vitmatte-small-composition-1k.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">hustvl/vitmatte-small-composition-1k</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-facebook-bart-large-mnli.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">facebook/bart-large-mnli</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-distilbert-distilbert-base-uncased-finetuned-sst-2-english.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">distilbert/distilbert-base-uncased-finetuned-sst-2-english</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-hexgrad-kokoro-82m.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">hexgrad/Kokoro-82M</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-qwen-qwen3-embedding-0.6b.html" class="card" data-vram="1.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Qwen/Qwen3-Embedding-0.6B</span>
+                    <span class="vram-req">Min VRAM: 1.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-sentence-transformers-all-minilm-l12-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">sentence-transformers/all-MiniLM-L12-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-facebook-w2v-bert-2.0.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">facebook/w2v-bert-2.0</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-iitolstykh-mivolo_v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">iitolstykh/mivolo_v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-comfy-org-z_image_turbo.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Comfy-Org/z_image_turbo</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-meta-llama-llama-3.2-1b-instruct.html" class="card" data-vram="1.2">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">meta-llama/Llama-3.2-1B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 1.2GB</span>
+                </a>
+                <a href="rtx-5090-vs-qwen-qwen3-4b.html" class="card" data-vram="3.1">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Qwen/Qwen3-4B</span>
+                    <span class="vram-req">Min VRAM: 3.1GB</span>
+                </a>
+                <a href="rtx-5090-vs-cardiffnlp-twitter-roberta-base-sentiment-latest.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">cardiffnlp/twitter-roberta-base-sentiment-latest</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-baai-bge-large-en-v1.5.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">BAAI/bge-large-en-v1.5</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-facebookai-xlm-roberta-large.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">FacebookAI/xlm-roberta-large</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-intfloat-multilingual-e5-large.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">intfloat/multilingual-e5-large</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-baai-bge-base-en-v1.5.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">BAAI/bge-base-en-v1.5</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-openai-clip-vit-base-patch16.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">openai/clip-vit-base-patch16</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-nlpaueb-legal-bert-base-uncased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">nlpaueb/legal-bert-base-uncased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-mistralai-mistral-7b-instruct-v0.2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">mistralai/Mistral-7B-Instruct-v0.2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-jonatasgrosman-wav2vec2-large-xlsr-53-portuguese.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">jonatasgrosman/wav2vec2-large-xlsr-53-portuguese</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-baai-bge-small-en-v1.5.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">BAAI/bge-small-en-v1.5</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-baai-bge-reranker-v2-m3.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">BAAI/bge-reranker-v2-m3</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-qwen-qwen2.5-vl-7b-instruct.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">Qwen/Qwen2.5-VL-7B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-jonatasgrosman-wav2vec2-large-xlsr-53-japanese.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">jonatasgrosman/wav2vec2-large-xlsr-53-japanese</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-w11wo-indonesian-roberta-base-posp-tagger.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">w11wo/indonesian-roberta-base-posp-tagger</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-prosusai-finbert.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">ProsusAI/finbert</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-meta-llama-llama-3.2-1b.html" class="card" data-vram="1.2">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">meta-llama/Llama-3.2-1B</span>
+                    <span class="vram-req">Min VRAM: 1.2GB</span>
+                </a>
+                <a href="rtx-5090-vs-ggml-org-models-moved.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">ggml-org/models-moved</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5090-vs-mahmoudashraf-mms-300m-1130-forced-aligner.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5090</span>
+                    <span class="model-name">MahmoudAshraf/mms-300m-1130-forced-aligner</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-sentence-transformers-all-minilm-l6-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">sentence-transformers/all-MiniLM-L6-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-falconsai-nsfw_image_detection.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Falconsai/nsfw_image_detection</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-google-electra-base-discriminator.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">google/electra-base-discriminator</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-google-bert-bert-base-uncased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">google-bert/bert-base-uncased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-dima806-fairface_age_image_detection.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">dima806/fairface_age_image_detection</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-sentence-transformers-all-mpnet-base-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">sentence-transformers/all-mpnet-base-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-timm-mobilenetv3_small_100.lamb_in1k.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">timm/mobilenetv3_small_100.lamb_in1k</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-sentence-transformers-paraphrase-multilingual-minilm-l12-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-openai-clip-vit-base-patch32.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">openai/clip-vit-base-patch32</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-pyannote-segmentation-3.0.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">pyannote/segmentation-3.0</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-laion-clap-htsat-fused.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">laion/clap-htsat-fused</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-pyannote-speaker-diarization-3.1.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">pyannote/speaker-diarization-3.1</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-pyannote-wespeaker-voxceleb-resnet34-lm.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">pyannote/wespeaker-voxceleb-resnet34-LM</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-prajjwal1-bert-tiny.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">prajjwal1/bert-tiny</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-facebookai-roberta-large.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">FacebookAI/roberta-large</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-bingsu-adetailer.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Bingsu/adetailer</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-colbert-ir-colbertv2.0.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">colbert-ir/colbertv2.0</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-omni-research-tarsier2-recap-7b.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">omni-research/Tarsier2-Recap-7b</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-magic-leap-community-superpoint.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">magic-leap-community/superpoint</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-meta-llama-llama-3.1-8b-instruct.html" class="card" data-vram="5.6">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">meta-llama/Llama-3.1-8B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 5.6GB</span>
+                </a>
+                <a href="rtx-4090-vs-eth-cvg-lightglue_superpoint.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">ETH-CVG/lightglue_superpoint</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-distilbert-distilbert-base-uncased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">distilbert/distilbert-base-uncased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-qwen-qwen2.5-3b-instruct.html" class="card" data-vram="2.5">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Qwen/Qwen2.5-3B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 2.5GB</span>
+                </a>
+                <a href="rtx-4090-vs-timm-resnet50.a1_in1k.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">timm/resnet50.a1_in1k</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-openai-community-gpt2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">openai-community/gpt2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-openai-clip-vit-large-patch14.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">openai/clip-vit-large-patch14</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-baai-bge-m3.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">BAAI/bge-m3</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-qwen-qwen3-0.6b.html" class="card" data-vram="1.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Qwen/Qwen3-0.6B</span>
+                    <span class="vram-req">Min VRAM: 1.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-facebook-contriever.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">facebook/contriever</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-openai-gpt-oss-20b.html" class="card" data-vram="13.1">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">openai/gpt-oss-20b</span>
+                    <span class="vram-req">Min VRAM: 13.1GB</span>
+                </a>
+                <a href="rtx-4090-vs-facebookai-roberta-base.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">FacebookAI/roberta-base</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-jonatasgrosman-wav2vec2-large-xlsr-53-chinese-zh-cn.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">jonatasgrosman/wav2vec2-large-xlsr-53-chinese-zh-cn</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-qwen-qwen2.5-7b-instruct.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Qwen/Qwen2.5-7B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-facebookai-xlm-roberta-base.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">FacebookAI/xlm-roberta-base</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-autogluon-chronos-bolt-small.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">autogluon/chronos-bolt-small</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-cross-encoder-ms-marco-minilm-l6-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">cross-encoder/ms-marco-MiniLM-L6-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-coqui-xtts-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">coqui/XTTS-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-comfy-org-wan_2.2_comfyui_repackaged.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Comfy-Org/Wan_2.2_ComfyUI_Repackaged</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-usyd-community-vitpose-plus-base.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">usyd-community/vitpose-plus-base</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-qwen-qwen2.5-vl-3b-instruct.html" class="card" data-vram="2.5">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Qwen/Qwen2.5-VL-3B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 2.5GB</span>
+                </a>
+                <a href="rtx-4090-vs-qwen-qwen2.5-coder-0.5b-instruct.html" class="card" data-vram="0.9">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Qwen/Qwen2.5-Coder-0.5B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 0.9GB</span>
+                </a>
+                <a href="rtx-4090-vs-sentence-transformers-paraphrase-multilingual-mpnet-base-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">sentence-transformers/paraphrase-multilingual-mpnet-base-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-google-siglip-so400m-patch14-384.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">google/siglip-so400m-patch14-384</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-openai-whisper-large-v3.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">openai/whisper-large-v3</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-kijai-wanvideo_comfy.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Kijai/WanVideo_comfy</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-google-bert-bert-base-multilingual-uncased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">google-bert/bert-base-multilingual-uncased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-jonatasgrosman-wav2vec2-large-xlsr-53-russian.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">jonatasgrosman/wav2vec2-large-xlsr-53-russian</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-qwen-qwen2.5-1.5b-instruct.html" class="card" data-vram="1.5">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Qwen/Qwen2.5-1.5B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 1.5GB</span>
+                </a>
+                <a href="rtx-4090-vs-openai-clip-vit-large-patch14-336.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">openai/clip-vit-large-patch14-336</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-jinaai-jina-embeddings-v3.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">jinaai/jina-embeddings-v3</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-google-bert-bert-base-multilingual-cased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">google-bert/bert-base-multilingual-cased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-sentence-transformers-multi-qa-mpnet-base-dot-v1.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">sentence-transformers/multi-qa-mpnet-base-dot-v1</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-deepseek-ai-deepseek-ocr.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">deepseek-ai/DeepSeek-OCR</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-qwen-qwen3-1.7b.html" class="card" data-vram="1.7">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Qwen/Qwen3-1.7B</span>
+                    <span class="vram-req">Min VRAM: 1.7GB</span>
+                </a>
+                <a href="rtx-4090-vs-alibaba-nlp-gte-large-en-v1.5.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Alibaba-NLP/gte-large-en-v1.5</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-google-vit-base-patch16-224.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">google/vit-base-patch16-224</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-facebook-bart-large-cnn.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">facebook/bart-large-cnn</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-facebook-opt-125m.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">facebook/opt-125m</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-qwen-qwen3-4b-instruct-2507.html" class="card" data-vram="3.1">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Qwen/Qwen3-4B-Instruct-2507</span>
+                    <span class="vram-req">Min VRAM: 3.1GB</span>
+                </a>
+                <a href="rtx-4090-vs-openai-whisper-small.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">openai/whisper-small</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-dphn-dolphin-2.9.1-yi-1.5-34b.html" class="card" data-vram="21.9">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">dphn/dolphin-2.9.1-yi-1.5-34b</span>
+                    <span class="vram-req">Min VRAM: 21.9GB</span>
+                </a>
+                <a href="rtx-4090-vs-lpiccinelli-unidepth-v2-vitl14.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">lpiccinelli/unidepth-v2-vitl14</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-openai-whisper-large-v3-turbo.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">openai/whisper-large-v3-turbo</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-nvidia-bigvgan_v2_22khz_80band_256x.html" class="card" data-vram="50.6">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">nvidia/bigvgan_v2_22khz_80band_256x</span>
+                    <span class="vram-req">Min VRAM: 50.6GB</span>
+                </a>
+                <a href="rtx-4090-vs-comfy-org-wan_2.1_comfyui_repackaged.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Comfy-Org/Wan_2.1_ComfyUI_repackaged</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-emilyalsentzer-bio_clinicalbert.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">emilyalsentzer/Bio_ClinicalBERT</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-qwen-qwen3-32b.html" class="card" data-vram="20.6">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Qwen/Qwen3-32B</span>
+                    <span class="vram-req">Min VRAM: 20.6GB</span>
+                </a>
+                <a href="rtx-4090-vs-openai-gpt-oss-120b.html" class="card" data-vram="75.6">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">openai/gpt-oss-120b</span>
+                    <span class="vram-req">Min VRAM: 75.6GB</span>
+                </a>
+                <a href="rtx-4090-vs-autogluon-chronos-bolt-base.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">autogluon/chronos-bolt-base</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-qwen-qwen3-8b.html" class="card" data-vram="5.6">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Qwen/Qwen3-8B</span>
+                    <span class="vram-req">Min VRAM: 5.6GB</span>
+                </a>
+                <a href="rtx-4090-vs-roadz-qwen3-1.7b-oxxroad.html" class="card" data-vram="1.7">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">roadz/qwen3-1.7b-oxxroad</span>
+                    <span class="vram-req">Min VRAM: 1.7GB</span>
+                </a>
+                <a href="rtx-4090-vs-hustvl-vitmatte-small-composition-1k.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">hustvl/vitmatte-small-composition-1k</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-facebook-bart-large-mnli.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">facebook/bart-large-mnli</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-distilbert-distilbert-base-uncased-finetuned-sst-2-english.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">distilbert/distilbert-base-uncased-finetuned-sst-2-english</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-hexgrad-kokoro-82m.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">hexgrad/Kokoro-82M</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-qwen-qwen3-embedding-0.6b.html" class="card" data-vram="1.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Qwen/Qwen3-Embedding-0.6B</span>
+                    <span class="vram-req">Min VRAM: 1.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-sentence-transformers-all-minilm-l12-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">sentence-transformers/all-MiniLM-L12-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-facebook-w2v-bert-2.0.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">facebook/w2v-bert-2.0</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-iitolstykh-mivolo_v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">iitolstykh/mivolo_v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-comfy-org-z_image_turbo.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Comfy-Org/z_image_turbo</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-meta-llama-llama-3.2-1b-instruct.html" class="card" data-vram="1.2">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">meta-llama/Llama-3.2-1B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 1.2GB</span>
+                </a>
+                <a href="rtx-4090-vs-qwen-qwen3-4b.html" class="card" data-vram="3.1">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Qwen/Qwen3-4B</span>
+                    <span class="vram-req">Min VRAM: 3.1GB</span>
+                </a>
+                <a href="rtx-4090-vs-cardiffnlp-twitter-roberta-base-sentiment-latest.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">cardiffnlp/twitter-roberta-base-sentiment-latest</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-baai-bge-large-en-v1.5.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">BAAI/bge-large-en-v1.5</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-facebookai-xlm-roberta-large.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">FacebookAI/xlm-roberta-large</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-intfloat-multilingual-e5-large.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">intfloat/multilingual-e5-large</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-baai-bge-base-en-v1.5.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">BAAI/bge-base-en-v1.5</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-openai-clip-vit-base-patch16.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">openai/clip-vit-base-patch16</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-nlpaueb-legal-bert-base-uncased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">nlpaueb/legal-bert-base-uncased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-mistralai-mistral-7b-instruct-v0.2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">mistralai/Mistral-7B-Instruct-v0.2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-jonatasgrosman-wav2vec2-large-xlsr-53-portuguese.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">jonatasgrosman/wav2vec2-large-xlsr-53-portuguese</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-baai-bge-small-en-v1.5.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">BAAI/bge-small-en-v1.5</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-baai-bge-reranker-v2-m3.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">BAAI/bge-reranker-v2-m3</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-qwen-qwen2.5-vl-7b-instruct.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">Qwen/Qwen2.5-VL-7B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-jonatasgrosman-wav2vec2-large-xlsr-53-japanese.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">jonatasgrosman/wav2vec2-large-xlsr-53-japanese</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-w11wo-indonesian-roberta-base-posp-tagger.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">w11wo/indonesian-roberta-base-posp-tagger</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-prosusai-finbert.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">ProsusAI/finbert</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-meta-llama-llama-3.2-1b.html" class="card" data-vram="1.2">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">meta-llama/Llama-3.2-1B</span>
+                    <span class="vram-req">Min VRAM: 1.2GB</span>
+                </a>
+                <a href="rtx-4090-vs-ggml-org-models-moved.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">ggml-org/models-moved</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-4090-vs-mahmoudashraf-mms-300m-1130-forced-aligner.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 4090</span>
+                    <span class="model-name">MahmoudAshraf/mms-300m-1130-forced-aligner</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-sentence-transformers-all-minilm-l6-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">sentence-transformers/all-MiniLM-L6-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-falconsai-nsfw_image_detection.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Falconsai/nsfw_image_detection</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-google-electra-base-discriminator.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">google/electra-base-discriminator</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-google-bert-bert-base-uncased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">google-bert/bert-base-uncased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-dima806-fairface_age_image_detection.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">dima806/fairface_age_image_detection</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-sentence-transformers-all-mpnet-base-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">sentence-transformers/all-mpnet-base-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-timm-mobilenetv3_small_100.lamb_in1k.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">timm/mobilenetv3_small_100.lamb_in1k</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-sentence-transformers-paraphrase-multilingual-minilm-l12-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-openai-clip-vit-base-patch32.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">openai/clip-vit-base-patch32</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-pyannote-segmentation-3.0.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">pyannote/segmentation-3.0</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-laion-clap-htsat-fused.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">laion/clap-htsat-fused</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-pyannote-speaker-diarization-3.1.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">pyannote/speaker-diarization-3.1</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-pyannote-wespeaker-voxceleb-resnet34-lm.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">pyannote/wespeaker-voxceleb-resnet34-LM</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-prajjwal1-bert-tiny.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">prajjwal1/bert-tiny</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-facebookai-roberta-large.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">FacebookAI/roberta-large</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-bingsu-adetailer.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Bingsu/adetailer</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-colbert-ir-colbertv2.0.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">colbert-ir/colbertv2.0</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-omni-research-tarsier2-recap-7b.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">omni-research/Tarsier2-Recap-7b</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-magic-leap-community-superpoint.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">magic-leap-community/superpoint</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-meta-llama-llama-3.1-8b-instruct.html" class="card" data-vram="5.6">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">meta-llama/Llama-3.1-8B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 5.6GB</span>
+                </a>
+                <a href="rtx-5080-vs-eth-cvg-lightglue_superpoint.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">ETH-CVG/lightglue_superpoint</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-distilbert-distilbert-base-uncased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">distilbert/distilbert-base-uncased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-qwen-qwen2.5-3b-instruct.html" class="card" data-vram="2.5">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Qwen/Qwen2.5-3B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 2.5GB</span>
+                </a>
+                <a href="rtx-5080-vs-timm-resnet50.a1_in1k.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">timm/resnet50.a1_in1k</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-openai-community-gpt2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">openai-community/gpt2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-openai-clip-vit-large-patch14.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">openai/clip-vit-large-patch14</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-baai-bge-m3.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">BAAI/bge-m3</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-qwen-qwen3-0.6b.html" class="card" data-vram="1.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Qwen/Qwen3-0.6B</span>
+                    <span class="vram-req">Min VRAM: 1.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-facebook-contriever.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">facebook/contriever</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-openai-gpt-oss-20b.html" class="card" data-vram="13.1">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">openai/gpt-oss-20b</span>
+                    <span class="vram-req">Min VRAM: 13.1GB</span>
+                </a>
+                <a href="rtx-5080-vs-facebookai-roberta-base.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">FacebookAI/roberta-base</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-jonatasgrosman-wav2vec2-large-xlsr-53-chinese-zh-cn.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">jonatasgrosman/wav2vec2-large-xlsr-53-chinese-zh-cn</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-qwen-qwen2.5-7b-instruct.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Qwen/Qwen2.5-7B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-facebookai-xlm-roberta-base.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">FacebookAI/xlm-roberta-base</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-autogluon-chronos-bolt-small.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">autogluon/chronos-bolt-small</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-cross-encoder-ms-marco-minilm-l6-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">cross-encoder/ms-marco-MiniLM-L6-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-coqui-xtts-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">coqui/XTTS-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-comfy-org-wan_2.2_comfyui_repackaged.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Comfy-Org/Wan_2.2_ComfyUI_Repackaged</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-usyd-community-vitpose-plus-base.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">usyd-community/vitpose-plus-base</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-qwen-qwen2.5-vl-3b-instruct.html" class="card" data-vram="2.5">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Qwen/Qwen2.5-VL-3B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 2.5GB</span>
+                </a>
+                <a href="rtx-5080-vs-qwen-qwen2.5-coder-0.5b-instruct.html" class="card" data-vram="0.9">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Qwen/Qwen2.5-Coder-0.5B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 0.9GB</span>
+                </a>
+                <a href="rtx-5080-vs-sentence-transformers-paraphrase-multilingual-mpnet-base-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">sentence-transformers/paraphrase-multilingual-mpnet-base-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-google-siglip-so400m-patch14-384.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">google/siglip-so400m-patch14-384</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-openai-whisper-large-v3.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">openai/whisper-large-v3</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-kijai-wanvideo_comfy.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Kijai/WanVideo_comfy</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-google-bert-bert-base-multilingual-uncased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">google-bert/bert-base-multilingual-uncased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-jonatasgrosman-wav2vec2-large-xlsr-53-russian.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">jonatasgrosman/wav2vec2-large-xlsr-53-russian</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-qwen-qwen2.5-1.5b-instruct.html" class="card" data-vram="1.5">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Qwen/Qwen2.5-1.5B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 1.5GB</span>
+                </a>
+                <a href="rtx-5080-vs-openai-clip-vit-large-patch14-336.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">openai/clip-vit-large-patch14-336</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-jinaai-jina-embeddings-v3.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">jinaai/jina-embeddings-v3</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-google-bert-bert-base-multilingual-cased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">google-bert/bert-base-multilingual-cased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-sentence-transformers-multi-qa-mpnet-base-dot-v1.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">sentence-transformers/multi-qa-mpnet-base-dot-v1</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-deepseek-ai-deepseek-ocr.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">deepseek-ai/DeepSeek-OCR</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-qwen-qwen3-1.7b.html" class="card" data-vram="1.7">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Qwen/Qwen3-1.7B</span>
+                    <span class="vram-req">Min VRAM: 1.7GB</span>
+                </a>
+                <a href="rtx-5080-vs-alibaba-nlp-gte-large-en-v1.5.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Alibaba-NLP/gte-large-en-v1.5</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-google-vit-base-patch16-224.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">google/vit-base-patch16-224</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-facebook-bart-large-cnn.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">facebook/bart-large-cnn</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-facebook-opt-125m.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">facebook/opt-125m</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-qwen-qwen3-4b-instruct-2507.html" class="card" data-vram="3.1">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Qwen/Qwen3-4B-Instruct-2507</span>
+                    <span class="vram-req">Min VRAM: 3.1GB</span>
+                </a>
+                <a href="rtx-5080-vs-openai-whisper-small.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">openai/whisper-small</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-dphn-dolphin-2.9.1-yi-1.5-34b.html" class="card" data-vram="21.9">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">dphn/dolphin-2.9.1-yi-1.5-34b</span>
+                    <span class="vram-req">Min VRAM: 21.9GB</span>
+                </a>
+                <a href="rtx-5080-vs-lpiccinelli-unidepth-v2-vitl14.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">lpiccinelli/unidepth-v2-vitl14</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-openai-whisper-large-v3-turbo.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">openai/whisper-large-v3-turbo</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-nvidia-bigvgan_v2_22khz_80band_256x.html" class="card" data-vram="50.6">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">nvidia/bigvgan_v2_22khz_80band_256x</span>
+                    <span class="vram-req">Min VRAM: 50.6GB</span>
+                </a>
+                <a href="rtx-5080-vs-comfy-org-wan_2.1_comfyui_repackaged.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Comfy-Org/Wan_2.1_ComfyUI_repackaged</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-emilyalsentzer-bio_clinicalbert.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">emilyalsentzer/Bio_ClinicalBERT</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-qwen-qwen3-32b.html" class="card" data-vram="20.6">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Qwen/Qwen3-32B</span>
+                    <span class="vram-req">Min VRAM: 20.6GB</span>
+                </a>
+                <a href="rtx-5080-vs-openai-gpt-oss-120b.html" class="card" data-vram="75.6">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">openai/gpt-oss-120b</span>
+                    <span class="vram-req">Min VRAM: 75.6GB</span>
+                </a>
+                <a href="rtx-5080-vs-autogluon-chronos-bolt-base.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">autogluon/chronos-bolt-base</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-qwen-qwen3-8b.html" class="card" data-vram="5.6">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Qwen/Qwen3-8B</span>
+                    <span class="vram-req">Min VRAM: 5.6GB</span>
+                </a>
+                <a href="rtx-5080-vs-roadz-qwen3-1.7b-oxxroad.html" class="card" data-vram="1.7">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">roadz/qwen3-1.7b-oxxroad</span>
+                    <span class="vram-req">Min VRAM: 1.7GB</span>
+                </a>
+                <a href="rtx-5080-vs-hustvl-vitmatte-small-composition-1k.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">hustvl/vitmatte-small-composition-1k</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-facebook-bart-large-mnli.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">facebook/bart-large-mnli</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-distilbert-distilbert-base-uncased-finetuned-sst-2-english.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">distilbert/distilbert-base-uncased-finetuned-sst-2-english</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-hexgrad-kokoro-82m.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">hexgrad/Kokoro-82M</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-qwen-qwen3-embedding-0.6b.html" class="card" data-vram="1.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Qwen/Qwen3-Embedding-0.6B</span>
+                    <span class="vram-req">Min VRAM: 1.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-sentence-transformers-all-minilm-l12-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">sentence-transformers/all-MiniLM-L12-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-facebook-w2v-bert-2.0.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">facebook/w2v-bert-2.0</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-iitolstykh-mivolo_v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">iitolstykh/mivolo_v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-comfy-org-z_image_turbo.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Comfy-Org/z_image_turbo</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-meta-llama-llama-3.2-1b-instruct.html" class="card" data-vram="1.2">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">meta-llama/Llama-3.2-1B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 1.2GB</span>
+                </a>
+                <a href="rtx-5080-vs-qwen-qwen3-4b.html" class="card" data-vram="3.1">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Qwen/Qwen3-4B</span>
+                    <span class="vram-req">Min VRAM: 3.1GB</span>
+                </a>
+                <a href="rtx-5080-vs-cardiffnlp-twitter-roberta-base-sentiment-latest.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">cardiffnlp/twitter-roberta-base-sentiment-latest</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-baai-bge-large-en-v1.5.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">BAAI/bge-large-en-v1.5</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-facebookai-xlm-roberta-large.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">FacebookAI/xlm-roberta-large</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-intfloat-multilingual-e5-large.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">intfloat/multilingual-e5-large</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-baai-bge-base-en-v1.5.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">BAAI/bge-base-en-v1.5</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-openai-clip-vit-base-patch16.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">openai/clip-vit-base-patch16</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-nlpaueb-legal-bert-base-uncased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">nlpaueb/legal-bert-base-uncased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-mistralai-mistral-7b-instruct-v0.2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">mistralai/Mistral-7B-Instruct-v0.2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-jonatasgrosman-wav2vec2-large-xlsr-53-portuguese.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">jonatasgrosman/wav2vec2-large-xlsr-53-portuguese</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-baai-bge-small-en-v1.5.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">BAAI/bge-small-en-v1.5</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-baai-bge-reranker-v2-m3.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">BAAI/bge-reranker-v2-m3</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-qwen-qwen2.5-vl-7b-instruct.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">Qwen/Qwen2.5-VL-7B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-jonatasgrosman-wav2vec2-large-xlsr-53-japanese.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">jonatasgrosman/wav2vec2-large-xlsr-53-japanese</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-w11wo-indonesian-roberta-base-posp-tagger.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">w11wo/indonesian-roberta-base-posp-tagger</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-prosusai-finbert.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">ProsusAI/finbert</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-meta-llama-llama-3.2-1b.html" class="card" data-vram="1.2">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">meta-llama/Llama-3.2-1B</span>
+                    <span class="vram-req">Min VRAM: 1.2GB</span>
+                </a>
+                <a href="rtx-5080-vs-ggml-org-models-moved.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">ggml-org/models-moved</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="rtx-5080-vs-mahmoudashraf-mms-300m-1130-forced-aligner.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Nvidia RTX 5080</span>
+                    <span class="model-name">MahmoudAshraf/mms-300m-1130-forced-aligner</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-sentence-transformers-all-minilm-l6-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">sentence-transformers/all-MiniLM-L6-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-falconsai-nsfw_image_detection.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Falconsai/nsfw_image_detection</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-google-electra-base-discriminator.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">google/electra-base-discriminator</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-google-bert-bert-base-uncased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">google-bert/bert-base-uncased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-dima806-fairface_age_image_detection.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">dima806/fairface_age_image_detection</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-sentence-transformers-all-mpnet-base-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">sentence-transformers/all-mpnet-base-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-timm-mobilenetv3_small_100.lamb_in1k.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">timm/mobilenetv3_small_100.lamb_in1k</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-sentence-transformers-paraphrase-multilingual-minilm-l12-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-openai-clip-vit-base-patch32.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">openai/clip-vit-base-patch32</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-pyannote-segmentation-3.0.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">pyannote/segmentation-3.0</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-laion-clap-htsat-fused.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">laion/clap-htsat-fused</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-pyannote-speaker-diarization-3.1.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">pyannote/speaker-diarization-3.1</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-pyannote-wespeaker-voxceleb-resnet34-lm.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">pyannote/wespeaker-voxceleb-resnet34-LM</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-prajjwal1-bert-tiny.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">prajjwal1/bert-tiny</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-facebookai-roberta-large.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">FacebookAI/roberta-large</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-bingsu-adetailer.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Bingsu/adetailer</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-colbert-ir-colbertv2.0.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">colbert-ir/colbertv2.0</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-omni-research-tarsier2-recap-7b.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">omni-research/Tarsier2-Recap-7b</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-magic-leap-community-superpoint.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">magic-leap-community/superpoint</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-meta-llama-llama-3.1-8b-instruct.html" class="card" data-vram="5.6">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">meta-llama/Llama-3.1-8B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 5.6GB</span>
+                </a>
+                <a href="mac-m4-max-vs-eth-cvg-lightglue_superpoint.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">ETH-CVG/lightglue_superpoint</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-distilbert-distilbert-base-uncased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">distilbert/distilbert-base-uncased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-qwen-qwen2.5-3b-instruct.html" class="card" data-vram="2.5">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Qwen/Qwen2.5-3B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 2.5GB</span>
+                </a>
+                <a href="mac-m4-max-vs-timm-resnet50.a1_in1k.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">timm/resnet50.a1_in1k</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-openai-community-gpt2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">openai-community/gpt2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-openai-clip-vit-large-patch14.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">openai/clip-vit-large-patch14</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-baai-bge-m3.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">BAAI/bge-m3</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-qwen-qwen3-0.6b.html" class="card" data-vram="1.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Qwen/Qwen3-0.6B</span>
+                    <span class="vram-req">Min VRAM: 1.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-facebook-contriever.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">facebook/contriever</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-openai-gpt-oss-20b.html" class="card" data-vram="13.1">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">openai/gpt-oss-20b</span>
+                    <span class="vram-req">Min VRAM: 13.1GB</span>
+                </a>
+                <a href="mac-m4-max-vs-facebookai-roberta-base.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">FacebookAI/roberta-base</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-jonatasgrosman-wav2vec2-large-xlsr-53-chinese-zh-cn.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">jonatasgrosman/wav2vec2-large-xlsr-53-chinese-zh-cn</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-qwen-qwen2.5-7b-instruct.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Qwen/Qwen2.5-7B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-facebookai-xlm-roberta-base.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">FacebookAI/xlm-roberta-base</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-autogluon-chronos-bolt-small.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">autogluon/chronos-bolt-small</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-cross-encoder-ms-marco-minilm-l6-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">cross-encoder/ms-marco-MiniLM-L6-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-coqui-xtts-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">coqui/XTTS-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-comfy-org-wan_2.2_comfyui_repackaged.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Comfy-Org/Wan_2.2_ComfyUI_Repackaged</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-usyd-community-vitpose-plus-base.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">usyd-community/vitpose-plus-base</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-qwen-qwen2.5-vl-3b-instruct.html" class="card" data-vram="2.5">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Qwen/Qwen2.5-VL-3B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 2.5GB</span>
+                </a>
+                <a href="mac-m4-max-vs-qwen-qwen2.5-coder-0.5b-instruct.html" class="card" data-vram="0.9">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Qwen/Qwen2.5-Coder-0.5B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 0.9GB</span>
+                </a>
+                <a href="mac-m4-max-vs-sentence-transformers-paraphrase-multilingual-mpnet-base-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">sentence-transformers/paraphrase-multilingual-mpnet-base-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-google-siglip-so400m-patch14-384.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">google/siglip-so400m-patch14-384</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-openai-whisper-large-v3.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">openai/whisper-large-v3</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-kijai-wanvideo_comfy.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Kijai/WanVideo_comfy</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-google-bert-bert-base-multilingual-uncased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">google-bert/bert-base-multilingual-uncased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-jonatasgrosman-wav2vec2-large-xlsr-53-russian.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">jonatasgrosman/wav2vec2-large-xlsr-53-russian</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-qwen-qwen2.5-1.5b-instruct.html" class="card" data-vram="1.5">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Qwen/Qwen2.5-1.5B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 1.5GB</span>
+                </a>
+                <a href="mac-m4-max-vs-openai-clip-vit-large-patch14-336.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">openai/clip-vit-large-patch14-336</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-jinaai-jina-embeddings-v3.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">jinaai/jina-embeddings-v3</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-google-bert-bert-base-multilingual-cased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">google-bert/bert-base-multilingual-cased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-sentence-transformers-multi-qa-mpnet-base-dot-v1.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">sentence-transformers/multi-qa-mpnet-base-dot-v1</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-deepseek-ai-deepseek-ocr.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">deepseek-ai/DeepSeek-OCR</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-qwen-qwen3-1.7b.html" class="card" data-vram="1.7">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Qwen/Qwen3-1.7B</span>
+                    <span class="vram-req">Min VRAM: 1.7GB</span>
+                </a>
+                <a href="mac-m4-max-vs-alibaba-nlp-gte-large-en-v1.5.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Alibaba-NLP/gte-large-en-v1.5</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-google-vit-base-patch16-224.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">google/vit-base-patch16-224</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-facebook-bart-large-cnn.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">facebook/bart-large-cnn</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-facebook-opt-125m.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">facebook/opt-125m</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-qwen-qwen3-4b-instruct-2507.html" class="card" data-vram="3.1">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Qwen/Qwen3-4B-Instruct-2507</span>
+                    <span class="vram-req">Min VRAM: 3.1GB</span>
+                </a>
+                <a href="mac-m4-max-vs-openai-whisper-small.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">openai/whisper-small</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-dphn-dolphin-2.9.1-yi-1.5-34b.html" class="card" data-vram="21.9">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">dphn/dolphin-2.9.1-yi-1.5-34b</span>
+                    <span class="vram-req">Min VRAM: 21.9GB</span>
+                </a>
+                <a href="mac-m4-max-vs-lpiccinelli-unidepth-v2-vitl14.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">lpiccinelli/unidepth-v2-vitl14</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-openai-whisper-large-v3-turbo.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">openai/whisper-large-v3-turbo</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-nvidia-bigvgan_v2_22khz_80band_256x.html" class="card" data-vram="50.6">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">nvidia/bigvgan_v2_22khz_80band_256x</span>
+                    <span class="vram-req">Min VRAM: 50.6GB</span>
+                </a>
+                <a href="mac-m4-max-vs-comfy-org-wan_2.1_comfyui_repackaged.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Comfy-Org/Wan_2.1_ComfyUI_repackaged</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-emilyalsentzer-bio_clinicalbert.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">emilyalsentzer/Bio_ClinicalBERT</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-qwen-qwen3-32b.html" class="card" data-vram="20.6">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Qwen/Qwen3-32B</span>
+                    <span class="vram-req">Min VRAM: 20.6GB</span>
+                </a>
+                <a href="mac-m4-max-vs-openai-gpt-oss-120b.html" class="card" data-vram="75.6">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">openai/gpt-oss-120b</span>
+                    <span class="vram-req">Min VRAM: 75.6GB</span>
+                </a>
+                <a href="mac-m4-max-vs-autogluon-chronos-bolt-base.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">autogluon/chronos-bolt-base</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-qwen-qwen3-8b.html" class="card" data-vram="5.6">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Qwen/Qwen3-8B</span>
+                    <span class="vram-req">Min VRAM: 5.6GB</span>
+                </a>
+                <a href="mac-m4-max-vs-roadz-qwen3-1.7b-oxxroad.html" class="card" data-vram="1.7">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">roadz/qwen3-1.7b-oxxroad</span>
+                    <span class="vram-req">Min VRAM: 1.7GB</span>
+                </a>
+                <a href="mac-m4-max-vs-hustvl-vitmatte-small-composition-1k.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">hustvl/vitmatte-small-composition-1k</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-facebook-bart-large-mnli.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">facebook/bart-large-mnli</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-distilbert-distilbert-base-uncased-finetuned-sst-2-english.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">distilbert/distilbert-base-uncased-finetuned-sst-2-english</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-hexgrad-kokoro-82m.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">hexgrad/Kokoro-82M</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-qwen-qwen3-embedding-0.6b.html" class="card" data-vram="1.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Qwen/Qwen3-Embedding-0.6B</span>
+                    <span class="vram-req">Min VRAM: 1.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-sentence-transformers-all-minilm-l12-v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">sentence-transformers/all-MiniLM-L12-v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-facebook-w2v-bert-2.0.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">facebook/w2v-bert-2.0</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-iitolstykh-mivolo_v2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">iitolstykh/mivolo_v2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-comfy-org-z_image_turbo.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Comfy-Org/z_image_turbo</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-meta-llama-llama-3.2-1b-instruct.html" class="card" data-vram="1.2">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">meta-llama/Llama-3.2-1B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 1.2GB</span>
+                </a>
+                <a href="mac-m4-max-vs-qwen-qwen3-4b.html" class="card" data-vram="3.1">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Qwen/Qwen3-4B</span>
+                    <span class="vram-req">Min VRAM: 3.1GB</span>
+                </a>
+                <a href="mac-m4-max-vs-cardiffnlp-twitter-roberta-base-sentiment-latest.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">cardiffnlp/twitter-roberta-base-sentiment-latest</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-baai-bge-large-en-v1.5.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">BAAI/bge-large-en-v1.5</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-facebookai-xlm-roberta-large.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">FacebookAI/xlm-roberta-large</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-intfloat-multilingual-e5-large.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">intfloat/multilingual-e5-large</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-baai-bge-base-en-v1.5.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">BAAI/bge-base-en-v1.5</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-openai-clip-vit-base-patch16.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">openai/clip-vit-base-patch16</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-nlpaueb-legal-bert-base-uncased.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">nlpaueb/legal-bert-base-uncased</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-mistralai-mistral-7b-instruct-v0.2.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">mistralai/Mistral-7B-Instruct-v0.2</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-jonatasgrosman-wav2vec2-large-xlsr-53-portuguese.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">jonatasgrosman/wav2vec2-large-xlsr-53-portuguese</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-baai-bge-small-en-v1.5.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">BAAI/bge-small-en-v1.5</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-baai-bge-reranker-v2-m3.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">BAAI/bge-reranker-v2-m3</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-qwen-qwen2.5-vl-7b-instruct.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">Qwen/Qwen2.5-VL-7B-Instruct</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-jonatasgrosman-wav2vec2-large-xlsr-53-japanese.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">jonatasgrosman/wav2vec2-large-xlsr-53-japanese</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-w11wo-indonesian-roberta-base-posp-tagger.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">w11wo/indonesian-roberta-base-posp-tagger</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-prosusai-finbert.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">ProsusAI/finbert</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-meta-llama-llama-3.2-1b.html" class="card" data-vram="1.2">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">meta-llama/Llama-3.2-1B</span>
+                    <span class="vram-req">Min VRAM: 1.2GB</span>
+                </a>
+                <a href="mac-m4-max-vs-ggml-org-models-moved.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">ggml-org/models-moved</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a>
+                <a href="mac-m4-max-vs-mahmoudashraf-mms-300m-1130-forced-aligner.html" class="card" data-vram="5.0">
+                    <span class="gpu-tag">Apple M4 Max</span>
+                    <span class="model-name">MahmoudAshraf/mms-300m-1130-forced-aligner</span>
+                    <span class="vram-req">Min VRAM: 5.0GB</span>
+                </a></div>
+
         <script>
-            document.getElementById('search').onkeyup = function() {
-                let val = this.value.toLowerCase();
-                document.querySelectorAll('#list li').forEach(li => {
-                    li.style.display = li.textContent.toLowerCase().includes(val) ? '' : 'none';
+            const search = document.getElementById('search');
+            const slider = document.getElementById('vram-slider');
+            const vramVal = document.getElementById('vram-val');
+            const cards = document.querySelectorAll('.card');
+
+            function filter() {
+                let query = search.value.toLowerCase();
+                let limit = parseFloat(slider.value);
+                vramVal.innerText = limit + " GB";
+
+                cards.forEach(card => {
+                    let req = parseFloat(card.getAttribute('data-vram'));
+                    let text = card.textContent.toLowerCase();
+                    
+                    // Filter logic: Must match search AND be under the VRAM limit
+                    if (text.includes(query)) {
+                        card.style.display = 'flex';
+                        if (req > limit) {
+                            card.classList.add('disabled');
+                        } else {
+                            card.classList.remove('disabled');
+                        }
+                    } else {
+                        card.style.display = 'none';
+                    }
                 });
-            };
+            }
+
+            search.oninput = filter;
+            slider.oninput = filter;
+            filter(); // Run on load
         </script>
     </body>
     </html>
