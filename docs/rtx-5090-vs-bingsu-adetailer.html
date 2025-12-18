@@ -3,54 +3,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bingsu/adetailer on Nvidia RTX 5090 - VRAM Requirements</title>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org/",
-      "@type": "Product",
-      "name": "Nvidia RTX 5090 for Bingsu/adetailer",
-      "brand": {"@type": "Brand", "name": "Nvidia"},
-      "offers": { "@type": "Offer", "price": "1999.0", "priceCurrency": "USD" }
-    }
-    </script>
     <style>
-        :root { --bg: #030712; --card: #111827; --accent: #3b82f6; --text: #f3f4f6; }
-        body { background: var(--bg); color: var(--text); font-family: system-ui; padding: 2rem; }
-        .card { background: var(--card); border: 1px solid #374151; padding: 2.5rem; border-radius: 20px; max-width: 800px; margin: auto; }
-        .badge { background: #1e293b; color: var(--accent); padding: 5px 15px; border-radius: 50px; font-weight: bold; font-size: 12px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin: 2rem 0; }
-        .stat { background: #1f2937; padding: 1.5rem; border-radius: 12px; border: 1px solid #374151; text-align: center; }
-        .stat b { display: block; font-size: 1.2rem; color: var(--accent); }
-        .cta { display: block; background: var(--accent); color: white; text-align: center; padding: 1rem; border-radius: 10px; text-decoration: none; font-weight: bold; }
+        :root { --bg: #020617; --card: rgba(30, 41, 59, 0.7); --accent: #3b82f6; --text: #f8fafc; --success: #22c55e; --fail: #ef4444; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 2rem; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .container { background: var(--card); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); padding: 3rem; border-radius: 24px; max-width: 900px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .badge { background: rgba(59, 130, 246, 0.2); color: var(--accent); padding: 6px 16px; border-radius: 99px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        h1 { font-size: 2.5rem; margin: 1rem 0; font-weight: 800; }
+        .subtitle { color: #94a3b8; font-size: 1.1rem; margin-bottom: 2rem; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 2.5rem 0; }
+        .stat-card { background: rgba(15, 23, 42, 0.5); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .stat-card span { display: block; color: #94a3b8; font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .stat-card b { font-size: 1.5rem; color: var(--text); }
+        .status-pill { display: inline-block; padding: 4px 12px; border-radius: 6px; font-weight: bold; margin-top: 10px; }
+        .yes { background: rgba(34, 197, 94, 0.1); color: var(--success); }
+        .no { background: rgba(239, 68, 68, 0.1); color: var(--fail); }
+        .cta-btn { display: block; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; text-align: center; padding: 1.2rem; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 1.1rem; transition: 0.3s; box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4); }
+        .cta-btn:hover { transform: scale(1.02); filter: brightness(1.1); }
     </style>
 </head>
 <body>
-    <div class="card">
-        <span class="badge">INFERENCE</span>
-        <h1>Can I run Bingsu/adetailer?</h1>
-        <p>Hardware: <b>Nvidia RTX 5090</b> (32GB VRAM)</p>
+    <div class="container">
+        <span class="badge">INFERENCE Compatibility</span>
+        <h1>Can you run Bingsu/adetailer?</h1>
+        <p class="subtitle">Detailed analysis for <b>Nvidia RTX 5090</b> (32GB VRAM)</p>
+        
         <div class="grid">
             
-            <div class="stat">
-                <span>4-bit</span>
-                <b>✅ YES</b>
-                <small>5.0GB</small>
+            <div class="stat-card">
+                <span>4-bit Quantization</span>
+                <b>5.0 GB</b>
+                <div class="status-pill yes">✅ YES</div>
             </div>
             
-            <div class="stat">
-                <span>8-bit</span>
-                <b>✅ YES</b>
-                <small>9.3GB</small>
+            <div class="stat-card">
+                <span>8-bit Quantization</span>
+                <b>9.3 GB</b>
+                <div class="status-pill yes">✅ YES</div>
             </div>
             
-            <div class="stat">
-                <span>16-bit</span>
-                <b>✅ YES</b>
-                <small>18.1GB</small>
+            <div class="stat-card">
+                <span>16-bit Quantization</span>
+                <b>18.1 GB</b>
+                <div class="status-pill yes">✅ YES</div>
             </div>
             
         </div>
-        <a href="#" class="cta">Check Nvidia RTX 5090 Price</a>
+        
+        <a href="https://amazon.com" class="cta-btn">Check Nvidia RTX 5090 Current Price</a>
     </div>
 </body>
 </html>
