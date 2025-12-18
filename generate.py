@@ -1,44 +1,42 @@
 import sqlite3, os, datetime
 from jinja2 import Template
 
-# --- PREMIUM PAGE TEMPLATE (Individual Comparisons) ---
+# --- INDIVIDUAL AUDIT PAGE (THE "ENGINE ROOM") ---
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ model_name }} on {{ gpu_name }} - VRAM.wiki</title>
+    <title>VRAM.wiki | {{ gpu_name }} Audit</title>
     <style>
-        :root { --bg: #020617; --card: rgba(30, 41, 59, 0.7); --accent: #3b82f6; --text: #f8fafc; --success: #22c55e; --fail: #ef4444; }
-        body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; padding: 2rem; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .container { background: var(--card); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); padding: 3rem; border-radius: 24px; max-width: 800px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-        .badge { background: rgba(59, 130, 246, 0.2); color: var(--accent); padding: 6px 16px; border-radius: 99px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; }
-        h1 { font-size: 2.2rem; margin: 1rem 0; font-weight: 800; }
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 2rem 0; }
-        .stat-card { background: rgba(15, 23, 42, 0.5); padding: 1.2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
-        .stat-card b { display: block; font-size: 1.4rem; color: var(--accent); margin: 5px 0; }
-        .status-pill { display: inline-block; padding: 4px 12px; border-radius: 6px; font-weight: bold; margin-top: 10px; font-size: 0.8rem; }
-        .yes { background: rgba(34, 197, 94, 0.1); color: var(--success); }
-        .no { background: rgba(239, 68, 68, 0.1); color: var(--fail); }
-        .cta { display: block; background: #3b82f6; color: white; text-align: center; padding: 1.1rem; border-radius: 12px; text-decoration: none; font-weight: bold; margin-top: 2rem; }
+        :root { --bg: #050505; --neon: #00f2ff; --warn: #ff0055; --card: rgba(20, 20, 20, 0.8); }
+        body { background: var(--bg); color: #fff; font-family: 'JetBrains Mono', monospace; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
+        .hud { border: 2px solid var(--neon); padding: 40px; border-radius: 5px; background: var(--card); box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); max-width: 600px; position: relative; }
+        .hud::before { content: "SYSTEM_DIAGNOSTIC_v2.5"; position: absolute; top: -12px; left: 20px; background: var(--bg); padding: 0 10px; color: var(--neon); font-size: 10px; }
+        .header { border-bottom: 1px solid #333; margin-bottom: 30px; padding-bottom: 20px; }
+        .gpu-title { font-size: 24px; text-transform: uppercase; letter-spacing: 5px; }
+        .stat-row { display: flex; justify-content: space-between; margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.03); border-left: 3px solid var(--neon); }
+        .val { font-weight: bold; color: var(--neon); }
+        .status-box { text-align: center; margin-top: 30px; padding: 20px; border: 1px dashed #444; }
+        .btn { display: block; border: 1px solid var(--neon); color: var(--neon); text-decoration: none; text-align: center; padding: 15px; margin-top: 30px; transition: 0.3s; }
+        .btn:hover { background: var(--neon); color: #000; box-shadow: 0 0 30px var(--neon); }
     </style>
 </head>
 <body>
-    <div class="container">
-        <span class="badge">{{ task }} Compatibility</span>
-        <h1>Can I run {{ model_name }}?</h1>
-        <p>Tested on <b>{{ gpu_name }}</b> ({{ vram_total }}GB VRAM)</p>
-        <div class="grid">
-            {% for r in results %}
-            <div class="stat-card">
-                <span>{{ r.bit }}-bit</span>
-                <b>{{ r.needed }}GB</b>
-                <span class="status-pill {{ 'yes' if 'YES' in r.status else 'no' }}">{{ r.status }}</span>
-            </div>
-            {% endfor %}
+    <div class="hud">
+        <div class="header">
+            <div class="gpu-title">{{ gpu_name }}</div>
+            <div style="font-size: 10px; color: #666;">TARGET: {{ model_name }}</div>
         </div>
-        <a href="{{ cta_link }}" class="cta">Check {{ gpu_name }} Price</a>
+        {% for r in results %}
+        <div class="stat-row">
+            <span>QUANT: {{ r.bit }}-BIT</span>
+            <span class="val">{{ r.needed }}GB</span>
+            <span style="color: {{ '#00ff00' if 'YES' in r.status else '#ff0000' }}">{{ r.status }}</span>
+        </div>
+        {% endfor %}
+        <a href="#" class="btn">ACQUIRE HARDWARE VIA AMAZON_NODE</a>
     </div>
 </body>
 </html>
@@ -59,118 +57,118 @@ def run_build():
     for h in hardware:
         for m in models:
             results = []
-            max_needed = 0
+            baseline_vram = 0
             for bit in [4, 8, 16]:
                 needed = round(((m['params_b'] * bit) / 8) * 1.25 + 0.6, 1)
-                if bit == 4: max_needed = needed # Use 4-bit as our baseline for the filter
-                results.append({"bit": bit, "needed": needed, "status": "✅ YES" if h['vram_gb'] >= needed else "❌ NO"})
+                if bit == 4: baseline_vram = needed
+                results.append({"bit": bit, "needed": needed, "status": "PASS" if h['vram_gb'] >= needed else "FAIL"})
             
             slug = f"{h['id']}-vs-{m['id'].replace('/', '-')}.html".lower()
             with open(f"docs/{slug}", "w") as f:
                 f.write(Template(HTML_TEMPLATE).render(
                     model_name=m['id'], gpu_name=h['name'], vram_total=h['vram_gb'], 
-                    task=m['task'], results=results, cta_link="#", date=2025
+                    results=results, date=2025
                 ))
             
-            # Data-VRAM attribute allows the slider to filter these
             links.append(f'''
-                <a href="{slug}" class="card" data-vram="{max_needed}">
-                    <span class="gpu-tag">{h['name']}</span>
-                    <span class="model-name">{m['id']}</span>
-                    <span class="vram-req">Min VRAM: {max_needed}GB</span>
+                <a href="{slug}" class="item" data-vram="{baseline_vram}">
+                    <div class="glitch-box">
+                        <span class="g-name">{h['name']}</span>
+                        <span class="m-name">{m['id']}</span>
+                    </div>
+                    <div class="r-val">{baseline_vram}GB</div>
                 </a>''')
             sitemap_urls.append(f"{base_url}/{slug}")
 
-    # --- THE INTERACTIVE INDEX ---
+    # --- THE TERMINAL INDEX ---
+   # --- THE "ZERO-STATE" TERMINAL INDEX ---
     index_html = f"""
     <!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>VRAM.wiki | AI Hardware Wizard</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>VRAM_WIKI // COMMAND_CENTER</title>
         <style>
-            :root {{ --bg: #020617; --card: #1e293b; --accent: #3b82f6; --text: #f8fafc; }}
-            body {{ background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; padding: 2rem; margin: 0; }}
-            .hero {{ text-align: center; margin: 4rem auto 2rem; max-width: 800px; }}
-            h1 {{ font-size: 3.5rem; font-weight: 800; letter-spacing: -2px; margin: 0; }}
+            :root {{ --neon: #00f2ff; --bg: #050505; }}
+            body {{ background: var(--bg); color: var(--neon); font-family: 'Courier New', monospace; margin: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }}
             
-            .controls {{ position: sticky; top: 20px; z-index: 100; max-width: 800px; margin: 0 auto 4rem; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); padding: 25px; border-radius: 20px; border: 1px solid #334155; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }}
-            .search-box {{ width: 100%; padding: 1rem; border-radius: 12px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 1.1rem; margin-bottom: 20px; outline: none; }}
+            .vignette {{ position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, transparent 20%, black 120%); pointer-events: none; }}
             
-            .slider-container {{ display: flex; align-items: center; gap: 20px; }}
-            .slider {{ flex-grow: 1; accent-color: var(--accent); cursor: pointer; }}
-            .vram-display {{ min-width: 120px; font-weight: 800; color: var(--accent); font-size: 1.2rem; }}
+            .search-zone {{ margin-top: 20vh; text-align: center; width: 80%; max-width: 800px; z-index: 10; transition: 0.5s ease; }}
+            .search-zone.active {{ margin-top: 5vh; }}
 
-            .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; max-width: 1200px; margin: auto; }}
-            .card {{ background: var(--card); border: 1px solid #334155; padding: 1.5rem; border-radius: 16px; text-decoration: none; color: inherit; transition: 0.3s; display: flex; flex-direction: column; }}
-            .card:hover {{ transform: translateY(-5px); border-color: var(--accent); background: #26334d; }}
-            .gpu-tag {{ color: var(--accent); font-weight: 800; font-size: 0.7rem; text-transform: uppercase; }}
-            .model-name {{ font-size: 1.1rem; font-weight: 600; margin: 10px 0; }}
-            .vram-req {{ font-size: 0.8rem; color: #94a3b8; }}
-            .disabled {{ opacity: 0.15; filter: grayscale(1); pointer-events: none; }}
+            h1 {{ font-size: 3rem; letter-spacing: 10px; text-shadow: 0 0 20px var(--neon); margin-bottom: 40px; }}
+            
+            .cmd-input {{ background: transparent; border: 2px solid var(--neon); color: var(--neon); padding: 20px; width: 100%; font-size: 1.5rem; font-family: inherit; outline: none; box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.2); }}
+            
+            .slider-box {{ margin-top: 20px; display: flex; align-items: center; gap: 20px; opacity: 0.7; font-size: 0.8rem; }}
+            input[type=range] {{ flex-grow: 1; accent-color: var(--neon); }}
+
+            /* RESULTS - INITIALLY HIDDEN */
+            #list {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; width: 90%; max-width: 1200px; margin-top: 50px; opacity: 0; transition: 0.5s; pointer-events: none; }}
+            #list.visible {{ opacity: 1; pointer-events: auto; }}
+
+            .item {{ border: 1px solid #111; padding: 20px; text-decoration: none; color: inherit; background: rgba(10, 10, 10, 0.8); position: relative; transition: 0.2s; }}
+            .item:hover {{ border-color: var(--neon); background: #00151a; box-shadow: 0 0 15px var(--neon); }}
+            .g-name {{ font-size: 10px; opacity: 0.5; display: block; }}
+            .m-name {{ font-size: 16px; display: block; margin-top: 5px; color: #fff; }}
+            .r-val {{ position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-weight: bold; border: 1px solid #333; padding: 5px 10px; }}
+            
+            .disabled {{ opacity: 0.1; filter: blur(3px); grayscale(1); }}
         </style>
     </head>
     <body>
-        <div class="hero">
-            <h1>VRAM<span style="color:var(--accent)">.wiki</span></h1>
-            <p style="color:#94a3b8">The AI Hardware Matchmaker</p>
-        </div>
-
-        <div class="controls">
-            <input type="text" id="search" class="search-box" placeholder="Search Model or GPU...">
-            <div class="slider-container">
-                <span>Your VRAM:</span>
-                <input type="range" id="vram-slider" class="slider" min="4" max="48" value="24">
-                <span class="vram-display" id="vram-val">24 GB</span>
+        <div class="vignette"></div>
+        
+        <div class="search-zone" id="search-zone">
+            <h1>VRAM.WIKI</h1>
+            <input type="text" id="search" class="cmd-input" placeholder="ENTER_HARDWARE_OR_MODEL_..." autofocus>
+            <div class="slider-box">
+                <span>LOCAL_VRAM_LIMIT:</span>
+                <input type="range" id="vram-slider" min="4" max="48" value="24">
+                <span id="vram-val">24GB</span>
             </div>
         </div>
 
-        <div class="grid" id="list">{''.join(links)}</div>
+        <div id="list">{''.join(links)}</div>
 
         <script>
             const search = document.getElementById('search');
+            const zone = document.getElementById('search-zone');
+            const list = document.getElementById('list');
             const slider = document.getElementById('vram-slider');
             const vramVal = document.getElementById('vram-val');
-            const cards = document.querySelectorAll('.card');
+            const items = document.querySelectorAll('.item');
 
             function filter() {{
-                let query = search.value.toLowerCase();
-                let limit = parseFloat(slider.value);
-                vramVal.innerText = limit + " GB";
+                let q = search.value.toLowerCase();
+                let lim = parseFloat(slider.value);
+                vramVal.innerText = lim + "GB";
 
-                cards.forEach(card => {{
-                    let req = parseFloat(card.getAttribute('data-vram'));
-                    let text = card.textContent.toLowerCase();
-                    
-                    // Filter logic: Must match search AND be under the VRAM limit
-                    if (text.includes(query)) {{
-                        card.style.display = 'flex';
-                        if (req > limit) {{
-                            card.classList.add('disabled');
-                        }} else {{
-                            card.classList.remove('disabled');
-                        }}
-                    }} else {{
-                        card.style.display = 'none';
-                    }}
+                if (q.length > 0) {{
+                    zone.classList.add('active');
+                    list.classList.add('visible');
+                }} else {{
+                    zone.classList.remove('active');
+                    list.classList.remove('visible');
+                }}
+
+                items.forEach(i => {{
+                    let req = parseFloat(i.getAttribute('data-vram'));
+                    let match = i.textContent.toLowerCase().includes(q);
+                    i.style.display = match ? 'block' : 'none';
+                    i.classList.toggle('disabled', req > lim);
                 }});
             }}
-
+            
             search.oninput = filter;
             slider.oninput = filter;
-            filter(); // Run on load
         </script>
     </body>
     </html>
     """
     with open("docs/index.html", "w") as f:
         f.write(index_html)
-    
-    # Sitemap
-    sitemap_xml = f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>{base_url}/index.html</loc></url>{"".join([f"<url><loc>{u}</loc></url>" for u in sitemap_urls])}</urlset>'
-    with open("docs/sitemap.xml", "w") as f:
-        f.write(sitemap_xml)
     conn.close()
 
 if __name__ == "__main__":
