@@ -4,49 +4,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>w11wo/indonesian-roberta-base-posp-tagger on Nvidia RTX 5090 - VRAM.wiki</title>
+    <title>VRAM.wiki | Nvidia RTX 5090 Audit</title>
     <style>
-        :root { --bg: #020617; --card: rgba(30, 41, 59, 0.7); --accent: #3b82f6; --text: #f8fafc; --success: #22c55e; --fail: #ef4444; }
-        body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; padding: 2rem; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .container { background: var(--card); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); padding: 3rem; border-radius: 24px; max-width: 800px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-        .badge { background: rgba(59, 130, 246, 0.2); color: var(--accent); padding: 6px 16px; border-radius: 99px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; }
-        h1 { font-size: 2.2rem; margin: 1rem 0; font-weight: 800; }
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 2rem 0; }
-        .stat-card { background: rgba(15, 23, 42, 0.5); padding: 1.2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
-        .stat-card b { display: block; font-size: 1.4rem; color: var(--accent); margin: 5px 0; }
-        .status-pill { display: inline-block; padding: 4px 12px; border-radius: 6px; font-weight: bold; margin-top: 10px; font-size: 0.8rem; }
-        .yes { background: rgba(34, 197, 94, 0.1); color: var(--success); }
-        .no { background: rgba(239, 68, 68, 0.1); color: var(--fail); }
-        .cta { display: block; background: #3b82f6; color: white; text-align: center; padding: 1.1rem; border-radius: 12px; text-decoration: none; font-weight: bold; margin-top: 2rem; }
+        :root { --bg: #050505; --neon: #00f2ff; --warn: #ff0055; --card: rgba(20, 20, 20, 0.8); }
+        body { background: var(--bg); color: #fff; font-family: 'JetBrains Mono', monospace; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
+        .hud { border: 2px solid var(--neon); padding: 40px; border-radius: 5px; background: var(--card); box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); max-width: 600px; position: relative; }
+        .hud::before { content: "SYSTEM_DIAGNOSTIC_v2.5"; position: absolute; top: -12px; left: 20px; background: var(--bg); padding: 0 10px; color: var(--neon); font-size: 10px; }
+        .header { border-bottom: 1px solid #333; margin-bottom: 30px; padding-bottom: 20px; }
+        .gpu-title { font-size: 24px; text-transform: uppercase; letter-spacing: 5px; }
+        .stat-row { display: flex; justify-content: space-between; margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.03); border-left: 3px solid var(--neon); }
+        .val { font-weight: bold; color: var(--neon); }
+        .status-box { text-align: center; margin-top: 30px; padding: 20px; border: 1px dashed #444; }
+        .btn { display: block; border: 1px solid var(--neon); color: var(--neon); text-decoration: none; text-align: center; padding: 15px; margin-top: 30px; transition: 0.3s; }
+        .btn:hover { background: var(--neon); color: #000; box-shadow: 0 0 30px var(--neon); }
     </style>
 </head>
 <body>
-    <div class="container">
-        <span class="badge">token-classification Compatibility</span>
-        <h1>Can I run w11wo/indonesian-roberta-base-posp-tagger?</h1>
-        <p>Tested on <b>Nvidia RTX 5090</b> (32GB VRAM)</p>
-        <div class="grid">
-            
-            <div class="stat-card">
-                <span>4-bit</span>
-                <b>5.0GB</b>
-                <span class="status-pill yes">✅ YES</span>
-            </div>
-            
-            <div class="stat-card">
-                <span>8-bit</span>
-                <b>9.3GB</b>
-                <span class="status-pill yes">✅ YES</span>
-            </div>
-            
-            <div class="stat-card">
-                <span>16-bit</span>
-                <b>18.1GB</b>
-                <span class="status-pill yes">✅ YES</span>
-            </div>
-            
+    <div class="hud">
+        <div class="header">
+            <div class="gpu-title">Nvidia RTX 5090</div>
+            <div style="font-size: 10px; color: #666;">TARGET: w11wo/indonesian-roberta-base-posp-tagger</div>
         </div>
-        <a href="#" class="cta">Check Nvidia RTX 5090 Price</a>
+        
+        <div class="stat-row">
+            <span>QUANT: 4-BIT</span>
+            <span class="val">5.0GB</span>
+            <span style="color: #ff0000">PASS</span>
+        </div>
+        
+        <div class="stat-row">
+            <span>QUANT: 8-BIT</span>
+            <span class="val">9.3GB</span>
+            <span style="color: #ff0000">PASS</span>
+        </div>
+        
+        <div class="stat-row">
+            <span>QUANT: 16-BIT</span>
+            <span class="val">18.1GB</span>
+            <span style="color: #ff0000">PASS</span>
+        </div>
+        
+        <a href="#" class="btn">ACQUIRE HARDWARE VIA AMAZON_NODE</a>
     </div>
 </body>
 </html>
